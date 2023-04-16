@@ -7,9 +7,6 @@
 [![GitHub latest commit](https://badgen.net/github/last-commit/ThomasByr/useful-moderator)](https://gitHub.com/ThomasByr/useful-moderator/commit/)
 [![Maintenance](https://img.shields.io/badge/maintained%3F-yes-green.svg)](https://GitHub.com/ThomasByr/useful-moderator/graphs/commit-activity)
 
-[![Continuous Integration](https://github.com/ThomasByr/useful-moderator/actions/workflows/main.yml/badge.svg)](https://github.com/ThomasByr/useful-moderator/actions/workflows/main.yml)
-[![rust-clippy analyze](https://github.com/ThomasByr/useful-moderator/actions/workflows/rust-clippy.yml/badge.svg)](https://github.com/ThomasByr/useful-moderator/actions/workflows/rust-clippy.yml)
-[![Publish](https://github.com/ThomasByr/useful-moderator/actions/workflows/publish.yml/badge.svg)](https://github.com/ThomasByr/useful-moderator/actions/workflows/publish.yml)
 [![GitHub version](https://badge.fury.io/gh/ThomasByr%2Fuseful-moderator.svg)](https://github.com/ThomasByr/useful-moderator)
 [![Author](https://img.shields.io/badge/author-@ThomasByr-blue)](https://github.com/ThomasByr)
 
