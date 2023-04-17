@@ -6,7 +6,7 @@ import logging
 from typing_extensions import override
 from termcolor import colored
 
-__all__ = ['logger', 'log_lvl', 'console_handler', 'UsefulFormatter']
+__all__ = ['logger', 'log_lvl', 'console_handler', 'default_formatter']
 
 
 def formatter(c: str, attrs: list[str] = []) -> str:
@@ -34,13 +34,12 @@ class UsefulFormatter(logging.Formatter):
 load_dotenv()
 DEBUG = os.getenv('DEBUG', 'False').lower() in {'true', '1', 'yes'}
 
-
 logger = logging.getLogger('me 🙂')
 logger.setLevel(log_lvl := logging.DEBUG if DEBUG else logging.INFO)
 
 # create console handler with a higher log level
 console_handler = logging.StreamHandler()
 console_handler.setLevel(log_lvl)
+console_handler.setFormatter(default_formatter := UsefulFormatter())
 
-console_handler.setFormatter(UsefulFormatter())
 logger.addHandler(console_handler)

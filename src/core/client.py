@@ -1,4 +1,3 @@
-from typing import Any, Coroutine
 import discord
 
 from discord.ext import commands
