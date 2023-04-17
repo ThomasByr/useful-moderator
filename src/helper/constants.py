@@ -1,2 +1,13 @@
+import discord
 
-FAIL_IMG = "fail.png"
+
+FAIL_IMG = "https://raw.githubusercontent.com/ThomasByr/useful-moderator/master/assets/images/fail.png"
+HELP_IMG = "https://raw.githubusercontent.com/ThomasByr/useful-moderator/master/assets/images/help.png"
+INVITE_IMG = "https://raw.githubusercontent.com/ThomasByr/useful-moderator/master/assets/images/invite.png"
+VOTE_IMG = "https://raw.githubusercontent.com/ThomasByr/useful-moderator/master/assets/images/vote.png"
+
+ME_IMG = "https://raw.githubusercontent.com/ThomasByr/useful-moderator/master/assets/images/useful-moderator.png"
+
+LOADING_EMOJI = discord.PartialEmoji(name='loading', id=983470338417516615, animated=True)
+SUCCESS_EMOJI = discord.PartialEmoji(name='check_mark', id=1014226765863989391, animated=True)
+FAIL_EMOJI = discord.PartialEmoji(name='across', id=1014227632461709383, animated=True)

@@ -1,3 +1,4 @@
+from typing import Any, Coroutine
 import discord
 
 from discord.ext import commands
@@ -35,7 +36,9 @@ class UsefulClient(commands.AutoShardedBot):
   async def setup(self):
     logger.info('Setting up...')
 
-    await self.add_cog(Admin(self))
+    await self.add_cog(Sudo(self))
+    await self.add_cog(BotLog(self))
+
     await self.add_cog(Utils(self))
 
     logger.info('Setting up complete')

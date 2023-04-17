@@ -1,6 +1,10 @@
 import discord
 
-__all__ = ['build_info_embed', 'build_success_embed', 'build_fail_embed', 'build_help_embed']
+from .constants import *
+
+__all__ = ['build_info_embed', 'build_response_embed', 'build_success_embed', 'build_fail_embed', 'build_help_embed']
+
+#%% base embedder
 
 
 def build_embed(
@@ -17,104 +21,70 @@ def build_embed(
     description=description,
     colour=colour,
   )
-  if footer:
+  if footer is not None:
     embed.set_footer(text=footer, icon_url=footer_icon)
-  if thumbnail:
+  if thumbnail is not None:
     embed.set_thumbnail(url=thumbnail)
-  if image:
+  if image is not None:
     embed.set_image(url=image)
   return embed
+
+
+#%% custom embedder
 
 
 def build_info_embed(
   title: str = None,
   description: str = None,
-  footer: str = None,
-  footer_icon: str = None,
-  thumbnail: str = None,
-  image: str = None,
 ) -> discord.Embed:
   return build_embed(
     title=title,
     description=description,
     colour=discord.Colour.blurple(),
-    footer=footer,
-    footer_icon=footer_icon,
-    thumbnail=thumbnail,
-    image=image,
   )
 
 
 def build_response_embed(
   title: str = None,
   description: str = None,
-  footer: str = None,
-  footer_icon: str = None,
-  thumbnail: str = None,
-  image: str = None,
 ) -> discord.Embed:
   return build_embed(
     title=title,
     description=description,
     colour=discord.Colour.gold(),
-    footer=footer,
-    footer_icon=footer_icon,
-    thumbnail=thumbnail,
-    image=image,
   )
 
 
 def build_success_embed(
   title: str = None,
   description: str = None,
-  footer: str = None,
-  footer_icon: str = None,
-  thumbnail: str = None,
-  image: str = None,
 ) -> discord.Embed:
   return build_embed(
     title=title,
     description=description,
     colour=discord.Colour.green(),
-    footer=footer,
-    footer_icon=footer_icon,
-    thumbnail=thumbnail,
-    image=image,
   )
 
 
 def build_fail_embed(
   title: str = None,
   description: str = None,
-  footer: str = None,
-  footer_icon: str = None,
-  thumbnail: str = None,
-  image: str = None,
 ) -> discord.Embed:
   return build_embed(
     title=title,
     description=description,
     colour=discord.Colour.red(),
-    footer=footer,
-    footer_icon=footer_icon,
-    thumbnail=thumbnail,
-    image=image,
+    thumbnail=FAIL_IMG,
   )
+
 
 def build_help_embed(
   title: str = None,
   description: str = None,
-  footer: str = None,
-  footer_icon: str = None,
-  thumbnail: str = None,
-  image: str = 'assets/images/useful_moderator.png'
 ) -> discord.Embed:
   return build_embed(
     title=title,
     description=description,
     colour=discord.Colour.blurple(),
-    footer=footer,
-    footer_icon=footer_icon,
-    thumbnail=thumbnail,
-    image=image,
+    thumbnail=HELP_IMG,
   )
