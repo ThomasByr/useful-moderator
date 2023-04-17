@@ -1,6 +1,6 @@
 import os
 
-from src import UsefulClient, UsefulFormatter, console_handler, log_lvl
+from src import UsefulClient, default_formatter, console_handler, log_lvl
 
 
 def get_token() -> str:
@@ -19,6 +19,6 @@ if __name__ == '__main__':
     BOT_TOKEN,
     reconnect=True,
     log_handler=console_handler,
-    log_formatter=UsefulFormatter(),
+    log_formatter=default_formatter,
     log_level=log_lvl,
   )
