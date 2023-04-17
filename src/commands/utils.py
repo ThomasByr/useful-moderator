@@ -2,7 +2,7 @@ import discord
 from discord import app_commands
 from discord.ext import commands
 
-from ..helper import build_info_embed, build_help_embed, logger
+from ..helper import *
 
 __all__ = ['Utils']
 
@@ -19,17 +19,15 @@ class Utils(commands.GroupCog):
       title='Help for `Utils` group',
       description='`Utils` group contains commands that are useful for developers and users.',
     ).add_field(
-      name='`ping`',
-      value='Test my ping to Discord\'s endpoint',
-      inline=False,
+      name='`ping` 🏓',
+      value='Test my ping to Discord\'s endpoint ; will fail only if the bot is offline.',
     )
-    await interaction.response.send_message(embed=embed)
+    await reply_with_embed(interaction, embed)
 
-  @app_commands.command(name='ping', description='Test my ping to Discord\'s endpoint')
+  @app_commands.command(name='ping', description='Test my ping to Discord\'s endpoint 🏓')
   async def ping(self, interaction: discord.Interaction):
+    embed = build_response_embed(title=f'Pong! `...ms` 🏓',)
+    await reply_with_embed(interaction, embed)
     ping_ = f'{round(self.__client.latency * 1000)}ms'
-    embed = build_info_embed(
-      title='Pong!',
-      description=f'`{ping_}`',
-    )
-    await interaction.response.send_message(embed=embed)
+    embed.title = f'Pong! `{ping_}` 🏓'
+    await edit_reply_with_embed(interaction, embed)
