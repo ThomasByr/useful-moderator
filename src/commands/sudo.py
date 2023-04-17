@@ -21,13 +21,15 @@ class Sudo(commands.GroupCog):
   async def help(self, interaction: discord.Interaction):
     embed = build_help_embed(
       title='Help for `Sudo` group',
-      description='`Sudo` group contains commands that are useful for developers and users.',
+      description='`Sudo` group contains commands that are useful for guild administrators.',
     ).add_field(
-      name='`echo` 🤫',
+      name='🤫 `echo`',
       value='Echo a message as the bot.',
+      inline=False,
     ).add_field(
-      name='`timeout` 🔨',
+      name='🔨 `timeout`',
       value='Timeout a specific user for a given duration (reason is optional).',
+      inline=False,
     )
     await reply_with_embed(interaction, embed)
 

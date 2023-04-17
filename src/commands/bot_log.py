@@ -23,8 +23,9 @@ class BotLog(commands.GroupCog):
       title='Help for `BotLog` group',
       description='`BotLog` group contains commands that are useful for the bot owner.',
     ).add_field(
-      name='`dump` 📝',
+      name='📝 `dump`',
       value='Dump the bot log in the current channel.',
+      inline=False,
     )
     await reply_with_embed(interaction, embed)
 

@@ -19,8 +19,9 @@ class Utils(commands.GroupCog):
       title='Help for `Utils` group',
       description='`Utils` group contains commands that are useful for developers and users.',
     ).add_field(
-      name='`ping` 🏓',
-      value='Test my ping to Discord\'s endpoint ; will fail only if the bot is offline.',
+      name='🏓 `ping`',
+      value='Test my ping to Discord\'s endpoint ; will ever only fail if the bot/shard is offline.',
+      inline=False,
     )
     await reply_with_embed(interaction, embed)
 
