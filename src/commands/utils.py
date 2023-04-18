@@ -25,7 +25,11 @@ class Utils(commands.GroupCog):
     ).add_field(
       name='🔗 `invite`',
       value=
-      'Get the bot\'s invite link.\n__**Note:**__ You need the `Manage Server` permission in your target server to invite the bot.',
+      'Get the bot\'s invite link. __**Note:**__ You need the `Manage Server` permission in your target server to invite the bot.',
+      inline=False,
+    ).add_field(
+      name='⏱️ `uptime`',
+      value='Get the bot\'s uptime (time since the last restart).',
       inline=False,
     )
     await reply_with_embed(interaction, embed)
@@ -44,6 +48,15 @@ class Utils(commands.GroupCog):
       title='Invite Link',
       description=f'Click the link below to invite me to your server!\n\n'
       f'[Invite me !]({self.__client.invite})',
-                                                                           # this one link exists... I swear
     )
+    # this one link exists... I swear
     await reply_with_embed(interaction, embed)
+
+  @app_commands.command(name='uptime', description='Get the bot\'s uptime ⏱️')
+  async def uptime(self, interaction: discord.Interaction):
+    embed = build_response_embed(title=f'Uptime: `.:..:..` ⏱️',)
+    await reply_with_embed(interaction, embed)
+    uptime_: str = self.__client.uptime
+    embed.title = f'Uptime: `{uptime_}` ⏱️'
+    # I swear there is somewhere a `uptime` property in the client
+    await edit_reply_with_embed(interaction, embed)

@@ -34,6 +34,10 @@ class BotLog(commands.GroupCog):
       '"all" mode means that all expressions must be found in a chunk, "any" mode means that at least one expression must be found in a chunk.',
       inline=False,
     ).add_field(
+      name='♻️ `last`',
+      value='Get the last few lines of the bot logs (defaults to 10).',
+      inline=False,
+    ).add_field(
       name='🧹 `clear`',
       value='Clear the bot log, resetting it to an empty file.',
       inline=False,
@@ -166,7 +170,8 @@ class BotLog(commands.GroupCog):
     failed = False
     try:
       with open('bot.log', 'w') as f:
-        f.write('')                                   # may result in a non-empty file if the loggers are not flushed
+        # may result in a non-empty file if the loggers are not flushed
+        f.write('')
     except Exception as e:
       failed = True
       embed = build_fail_embed(

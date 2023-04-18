@@ -2,6 +2,8 @@ import discord
 
 from discord.ext import commands
 
+import datetime
+
 from ..helper import *
 from ..commands import *
 
@@ -19,11 +21,16 @@ class UsefulClient(commands.AutoShardedBot):
   def __init__(self, prefix: str = '!', invite: str = None, **options):
     intents = discord.Intents.all()
     self.__invite = invite
+    self.__start_time = datetime.datetime.utcnow()
     super().__init__(command_prefix=prefix, intents=intents, **options)
 
   @property
   def invite(self) -> str:
     return self.__invite
+
+  @property
+  def uptime(self) -> str:
+    return str(datetime.datetime.utcnow() - self.__start_time).split('.')[0]
 
   async def on_ready(self):
     logger.info(f'Logged in as {self.user} (ID: {self.user.id})')

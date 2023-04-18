@@ -34,6 +34,22 @@ class Sudo(commands.GroupCog):
       name='🔨 `timeout`',
       value='Timeout a specific user for a given duration (reason is optional).',
       inline=False,
+    ).add_field(
+      name='🔨 `untimeout`',
+      value='Remove a timeout completely from a specific user.',
+      inline=False,
+    ).add_field(
+      name='🦶 `kick`',
+      value='Kick a specific user from the guild (reason is optional).',
+      inline=False,
+    ).add_field(
+      name='🚫 `ban`',
+      value='Ban a specific user from the guild (reason is optional). If `soft` is specified, the user will be banned but all messages will be kept.',
+      inline=False,
+    ).add_field(
+      name='🚫 `unban`',
+      value='Unban a specific user from the guild (**caution**: be sure that you want to unban this user, as the user will be able to join the guild again and could even use old links).',
+      inline=False,
     )
     await reply_with_embed(interaction, embed)
 
@@ -80,7 +96,11 @@ class Sudo(commands.GroupCog):
     await reply_with_status_embed(interaction, embed, failed)
 
   @app_commands.command(name='timeout', description='Timeout a user 🔨')
-  @app_commands.describe(duration='Duration of the timeout', reason='Reason for the timeout (optional)')
+  @app_commands.describe(
+    user='User to timeout',
+    duration='Duration of the timeout',
+    reason='Reason for the timeout (optional)',
+  )
   @app_commands.choices(duration=[
     app_commands.Choice(name='1 minute', value=60),
     app_commands.Choice(name='1 hour', value=3600),
@@ -106,6 +126,81 @@ class Sudo(commands.GroupCog):
       failed = True
       embed = build_fail_embed(
         title=f'{FAIL_EMOJI} error while timing out user `{user}` !',
+        description=f'```{e}```',
+      )
+    await reply_with_status_embed(interaction, embed, failed)
+
+  @app_commands.command(name='untimeout', description='Untimeout a user 🔨')
+  @app_commands.describe(
+    user='User to untimeout',)
+  async def untimeout(self, interaction: discord.Interaction, user: discord.Member):
+    embed = build_success_embed(title=f'{SUCCESS_EMOJI} user `{user}` has been untimed out !',)
+    failed = False
+    try:
+      await user.timeout(None)
+    except Exception as e:
+      failed = True
+      embed = build_fail_embed(
+        title=f'{FAIL_EMOJI} error while untiming out user `{user}` !',
+        description=f'```{e}```',
+      )
+    await reply_with_status_embed(interaction, embed, failed)
+
+  @app_commands.command(name='kick', description='Kick a user 🦶')
+  @app_commands.describe(
+    user='User to kick',
+    reason='Reason for the kick (optional)',
+  )
+  async def kick(self, interaction: discord.Interaction, user: discord.Member, reason: Optional[str] = None):
+    embed = build_success_embed(title=f'{SUCCESS_EMOJI} user `{user}` has been kicked !',)
+    failed = False
+    try:
+      await user.kick(reason=reason)
+    except Exception as e:
+      failed = True
+      embed = build_fail_embed(
+        title=f'{FAIL_EMOJI} error while kicking user `{user}` !',
+        description=f'```{e}```',
+      )
+    await reply_with_status_embed(interaction, embed, failed)
+
+  @app_commands.command(name='ban', description='Ban a user 🚫')
+  @app_commands.describe(
+    user='User to ban',
+    reason='Reason for the ban (optional)',
+    soft='Soft ban (optional)',
+  )
+  async def ban(self,
+                interaction: discord.Interaction,
+                user: discord.Member,
+                reason: Optional[str] = None,
+                soft: bool = False):
+    embed = build_success_embed(title=f'{SUCCESS_EMOJI} user `{user}` has been banned !',)
+    failed = False
+    try:
+      await user.ban(reason=reason, delete_message_days=0 if soft else 7)
+    except Exception as e:
+      failed = True
+      embed = build_fail_embed(
+        title=f'{FAIL_EMOJI} error while banning user `{user}` !',
+        description=f'```{e}```',
+      )
+    await reply_with_status_embed(interaction, embed, failed)
+
+  @app_commands.command(name='unban', description='Unban a user 🚫')
+  @app_commands.describe(
+    user='User to unban',
+    reason='Reason for the unban (optional)',
+  )
+  async def unban(self, interaction: discord.Interaction, user: discord.User, reason: Optional[str] = None):
+    embed = build_success_embed(title=f'{SUCCESS_EMOJI} user `{user}` has been unbanned !',)
+    failed = False
+    try:
+      await interaction.guild.unban(user, reason=reason)
+    except Exception as e:
+      failed = True
+      embed = build_fail_embed(
+        title=f'{FAIL_EMOJI} error while unbanning user `{user}` !',
         description=f'```{e}```',
       )
     await reply_with_status_embed(interaction, embed, failed)
