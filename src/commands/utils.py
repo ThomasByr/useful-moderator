@@ -22,6 +22,11 @@ class Utils(commands.GroupCog):
       name='🏓 `ping`',
       value='Test my ping to Discord\'s endpoint ; will ever only fail if the bot/shard is offline.',
       inline=False,
+    ).add_field(
+      name='🔗 `invite`',
+      value=
+      'Get the bot\'s invite link.\n__**Note:**__ You need the `Manage Server` permission in your target server to invite the bot.',
+      inline=False,
     )
     await reply_with_embed(interaction, embed)
 
@@ -32,3 +37,13 @@ class Utils(commands.GroupCog):
     ping_ = f'{round(self.__client.latency * 1000)}ms'
     embed.title = f'Pong! `{ping_}` 🏓'
     await edit_reply_with_embed(interaction, embed)
+
+  @app_commands.command(name='invite', description='Get the bot\'s invite link 🔗')
+  async def invite(self, interaction: discord.Interaction):
+    embed = build_invite_embed(
+      title='Invite Link',
+      description=f'Click the link below to invite me to your server!\n\n'
+      f'[Invite me !]({self.__client.invite})',
+                                                                           # this one link exists... I swear
+    )
+    await reply_with_embed(interaction, embed)

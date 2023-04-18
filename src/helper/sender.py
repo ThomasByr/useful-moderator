@@ -115,5 +115,9 @@ def send_channel_message(channel: discord.TextChannel, message: str) -> Coroutin
   return channel.send(message)
 
 
+def edit_channel_message(channel: discord.TextChannel, message: str, id: int) -> Coroutine[Any, Any, None]:
+  return channel.edit_message(message, id)
+
+
 def send_channel_file(channel: discord.TextChannel, file: discord.File) -> Coroutine[Any, Any, None]:
   return channel.send(file=file)

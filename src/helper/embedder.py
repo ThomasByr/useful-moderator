@@ -2,7 +2,14 @@ import discord
 
 from .constants import *
 
-__all__ = ['build_info_embed', 'build_response_embed', 'build_success_embed', 'build_fail_embed', 'build_help_embed']
+__all__ = [
+  'build_info_embed',
+  'build_response_embed',
+  'build_success_embed',
+  'build_fail_embed',
+  'build_help_embed',
+  'build_invite_embed',
+]
 
 #%% base embedder
 
@@ -87,4 +94,16 @@ def build_help_embed(
     description=description,
     colour=discord.Colour.blurple(),
     thumbnail=HELP_IMG,
+  )
+
+
+def build_invite_embed(
+  title: str = None,
+  description: str = None,
+) -> discord.Embed:
+  return build_embed(
+    title=title,
+    description=description,
+    colour=discord.Colour.blurple(),
+    thumbnail=INVITE_IMG,
   )

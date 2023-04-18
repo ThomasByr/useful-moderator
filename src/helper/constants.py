@@ -1,6 +1,5 @@
 import discord
 
-
 FAIL_IMG = "https://raw.githubusercontent.com/ThomasByr/useful-moderator/master/assets/images/fail.png"
 HELP_IMG = "https://raw.githubusercontent.com/ThomasByr/useful-moderator/master/assets/images/help.png"
 INVITE_IMG = "https://raw.githubusercontent.com/ThomasByr/useful-moderator/master/assets/images/invite.png"

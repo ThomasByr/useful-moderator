@@ -6,7 +6,6 @@ from discord import app_commands
 from discord.ext import commands
 
 import re
-import datetime
 
 from ..helper import *
 
@@ -29,7 +28,17 @@ class BotLog(commands.GroupCog):
       name='📝 `dump`',
       value='Dump the bot log in the current channel.',
       inline=False,
+    ).add_field(
+      name='🔎 `filter`',
+      value='Filter the bot log based on some expressions and a mode.\n'
+      '"all" mode means that all expressions must be found in a chunk, "any" mode means that at least one expression must be found in a chunk.',
+      inline=False,
+    ).add_field(
+      name='🧹 `clear`',
+      value='Clear the bot log, resetting it to an empty file.',
+      inline=False,
     )
+
     await reply_with_embed(interaction, embed)
 
   @commands.is_owner()
@@ -52,41 +61,116 @@ class BotLog(commands.GroupCog):
   @app_commands.command(name='filter', description='Filter the bot log based on some expressions 🔎')
   @app_commands.describe(
     expressions='Words or regex expressions (csv) to filter the bot log with',
-    mode='Mode of the filter (all or any))',
+    mode='Mode of the filter (all or any, defaults to any)',
   )
   @app_commands.choices(
     mode=[app_commands.Choice(name='all', value=0),
           app_commands.Choice(name='any', value=1)])
-  async def filter(self, interaction: discord.Interaction, expressions: str, mode: app_commands.Choice[int]):
+  async def filter(
+    self,
+    interaction: discord.Interaction,
+    expressions: str,
+    mode: Optional[app_commands.Choice[int]] = None,
+  ):
     expressions: list[str] = expressions.split(',')
     expressions = list(map(lambda expression: expression.strip().lower(), expressions))
+    if mode is None:
+      mode = app_commands.Choice(name='any', value=1)
+
     embed = build_success_embed(
       title=f'{SUCCESS_EMOJI} bot log filtered !',
-      description=f'```{mode.name}\n{expressions}```',
+      description=f'```{mode.name} {expressions}```',
     )
     failed = False
+
     try:
       # there are so many things that can go wrong here...
-      # todo: better logging lines parsing (maybe cut before the timestamp)
+
+      # read the file chunk by chunk
+      # each chunk is all the lines that are between two timestamps
+
       with open('bot.log', 'r') as f:
         lines = f.readlines()
-      if mode.value == 0:
-        lines = [
-          line for line in lines if all(re.search(expression, line.lower()) for expression in expressions)
-        ]
-      else:
-        lines = [
-          line for line in lines if any(re.search(expression, line.lower()) for expression in expressions)
-        ]
+
+      chunks: list[str] = []
+      for line in lines:
+        # timestamp is : '%Y-%m-%d %H:%M:%S'
+        if re.match(r'\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}', line):
+          chunks.append(line)
+        else:
+          if len(chunks) == 0:
+            chunks.append(line)
+          else:
+            chunks[-1] += line
+      fmode = all if mode.value == 0 else any
+
+      new_file: list[str] = [c for c in chunks if fmode([e in c.lower() for e in expressions])]
+
       with open('tmp.bot.log', 'w') as f:
-        f.writelines(lines)
+        f.writelines(new_file)
       file = discord.File('tmp.bot.log')
       await send_channel_file(interaction.channel, file)
       os.remove('tmp.bot.log')
+
     except Exception as e:
       failed = True
       embed = build_fail_embed(
         title=f'{FAIL_EMOJI} bot log filter failed !',
+        description=f'```{e}```',
+      )
+    await reply_with_status_embed(interaction, embed, failed)
+
+  @commands.is_owner()
+  @app_commands.command(name='last', description='Get the last lines of the bot log ♻️')
+  @app_commands.describe(
+    lines='Number of lines to get (defaults to 10)',)
+  @app_commands.choices(
+    lines=[app_commands.Choice(name=str(i), value=i) for i in (1, 10, 20, 50, 100)],)
+  async def last(self, interaction: discord.Integration, lines: Optional[app_commands.Choice[int]] = None):
+    if lines is None:
+      lines = app_commands.Choice(name='10', value=10)
+
+    # for this request we will build the success embed after the request
+    failed = False
+
+    try:
+      # there are so many things that can go wrong here...
+      with open('bot.log', 'r') as f:
+        file_lines = f.readlines()
+
+      new_file: list[str] = file_lines[-lines.value:]
+
+      with open('tmp.bot.log', 'w') as f:
+        f.writelines(new_file)
+      file = discord.File('tmp.bot.log')
+      await send_channel_file(interaction.channel, file)
+      os.remove('tmp.bot.log')
+
+    except Exception as e:
+      failed = True
+      embed = build_fail_embed(
+        title=f'{FAIL_EMOJI} bot log filter failed !',
+        description=f'```{e}```',
+      )
+    else:
+      embed = build_success_embed(
+        title=f'{SUCCESS_EMOJI} bot log filtered !',
+        description=f'```got {(n:=len(new_file))}/{lines.value} line{"s" if n > 1 else ""}```',
+      )
+    await reply_with_status_embed(interaction, embed, failed)
+
+  @commands.is_owner()
+  @app_commands.command(name='clear', description='Clear the bot log 🧹')
+  async def clear(self, interaction: discord.Interaction):
+    embed = build_success_embed(title=f'{SUCCESS_EMOJI} bot log cleared !',)
+    failed = False
+    try:
+      with open('bot.log', 'w') as f:
+        f.write('')                                   # may result in a non-empty file if the loggers are not flushed
+    except Exception as e:
+      failed = True
+      embed = build_fail_embed(
+        title=f'{FAIL_EMOJI} bot log clear failed !',
         description=f'```{e}```',
       )
     await reply_with_status_embed(interaction, embed, failed)
