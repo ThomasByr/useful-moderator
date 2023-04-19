@@ -44,11 +44,13 @@ class Sudo(commands.GroupCog):
       inline=False,
     ).add_field(
       name='🚫 `ban`',
-      value='Ban a specific user from the guild (reason is optional). If `soft` is specified, the user will be banned but all messages will be kept.',
+      value=
+      'Ban a specific user from the guild (reason is optional). If `soft` is specified, the user will be banned but all messages will be kept.',
       inline=False,
     ).add_field(
       name='🚫 `unban`',
-      value='Unban a specific user from the guild (**caution**: be sure that you want to unban this user, as the user will be able to join the guild again and could even use old links).',
+      value=
+      'Unban a specific user from the guild (**caution**: be sure that you want to unban this user, as the user will be able to join the guild again and could even use old links).',
       inline=False,
     )
     await reply_with_embed(interaction, embed)

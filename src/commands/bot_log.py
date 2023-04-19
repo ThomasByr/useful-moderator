@@ -30,8 +30,9 @@ class BotLog(commands.GroupCog):
       inline=False,
     ).add_field(
       name='🔎 `filter`',
-      value='Filter the bot log based on some expressions and a mode.\n'
-      '"all" mode means that all expressions must be found in a chunk, "any" mode means that at least one expression must be found in a chunk.',
+      value='Filter the bot log based on some expressions and a mode.'
+      '"all" mode means that all expressions must be found in a chunk, "any" mode means that at least one expression must be found in a chunk.'
+      'A chunk is a log between two timestamps, so that full error messages are preserved.',
       inline=False,
     ).add_field(
       name='♻️ `last`',

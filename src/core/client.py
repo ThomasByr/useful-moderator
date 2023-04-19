@@ -1,5 +1,6 @@
 import discord
 
+from typing_extensions import override
 from discord.ext import commands
 
 import datetime
@@ -32,6 +33,7 @@ class UsefulClient(commands.AutoShardedBot):
   def uptime(self) -> str:
     return str(datetime.datetime.utcnow() - self.__start_time).split('.')[0]
 
+  @override
   async def on_ready(self):
     logger.info(f'Logged in as {self.user} (ID: {self.user.id})')
     logger.info(f'Connected to {len(self.guilds)} guilds')
