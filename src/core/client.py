@@ -7,6 +7,7 @@ import datetime
 
 from ..helper import *
 from ..commands import *
+from ..db import *
 
 from ..version import __version__
 
@@ -24,6 +25,8 @@ class UsefulClient(commands.AutoShardedBot):
     self.__invite = invite
     self.__start_time = datetime.datetime.utcnow()
     super().__init__(command_prefix=prefix, intents=intents, **options)
+    
+    self.__db = UsefulDatabase()
 
   @property
   def invite(self) -> str:
@@ -46,7 +49,8 @@ class UsefulClient(commands.AutoShardedBot):
         name=f'v {__version__}',
       ),
     )
-    logger.info('Ready !')
+    await self.__db.test()
+    logger.info('Ready 🥳 !')
 
   async def setup(self):
     logger.info('Setting up...')

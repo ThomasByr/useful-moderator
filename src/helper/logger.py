@@ -31,6 +31,9 @@ class UsefulFormatter(logging.Formatter):
     return formatter.format(record)
 
 
+# we load the env variables here so that we can use them in the logger
+# because this file is imported in the main file first,
+# we can't load the env variables in the main file
 load_dotenv()
 DEBUG = os.getenv('DEBUG', 'False').lower() in {'true', '1', 'yes'}
 
