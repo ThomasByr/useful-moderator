@@ -10,6 +10,7 @@ __all__ = ['UsefulDatabase']
 DB_USER = os.getenv('DB_USER')
 DB_PASSWD = os.getenv('DB_PASSWD')
 DB_URL = os.getenv('DB_URL')
+DB_PORT = os.getenv('DB_PORT')
 CONNECTION_STRING = f'mongodb+srv://{DB_USER}:{DB_USER}@{DB_URL}/?retryWrites=true&w=majority'
 
 
@@ -33,7 +34,8 @@ class UsefulDatabase:
 
   async def connect(self):
     logger.debug('Connecting to database...')
-    self.__client = MongoClient(CONNECTION_STRING)
+    port_no = int(DB_PORT) if DB_PORT else None
+    self.__client = MongoClient(CONNECTION_STRING, port=port_no)
     self.__db = self.client.useful
     logger.debug('Connected to database')
 
