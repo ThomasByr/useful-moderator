@@ -1,6 +1,6 @@
 import os
 
-from src import UsefulClient, default_formatter, console_handler, log_lvl
+from src import UsefulClient
 
 
 def get_token() -> str:
@@ -22,10 +22,4 @@ BOT_INVITE = get_invite()
 if __name__ == '__main__':
 
   client = UsefulClient(BOT_PREFIX, BOT_INVITE, help_command=None)
-  client.run(
-    BOT_TOKEN,
-    reconnect=True,
-    log_handler=console_handler,
-    log_formatter=default_formatter,
-    log_level=log_lvl,
-  )
+  client.run(BOT_TOKEN)
