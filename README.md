@@ -1,4 +1,4 @@
-# <img src="assets/images/useful_moderator.png" alt="icon" width="4%"/> Discord Compiler Bot
+# <img src="assets/images/useful_moderator.png" alt="icon" width="4%"/> Useful Moderator - Discord Bot
 
 [![Linux](https://svgshare.com/i/Zhy.svg)](https://docs.microsoft.com/en-us/windows/wsl/tutorials/gui-apps)
 [![Windows](https://svgshare.com/i/ZhY.svg)](https://svgshare.com/i/ZhY.svg)
@@ -11,22 +11,31 @@
 [![Author](https://img.shields.io/badge/author-@ThomasByr-blue)](https://github.com/ThomasByr)
 
 1. [✏️ In short](#️-in-short)
-2. [👩‍🏫 Usage](#-usage)
+2. [👩‍🏫 Usage \& Setup](#-usage--setup)
 3. [💁 Get Help](#-get-help)
 4. [🔰 Support](#-support)
 5. [🧪 Testing](#-testing)
 6. [🧑‍🏫 Contributing](#-contributing)
 7. [⚖️ License](#️-license)
-8. [🖼️ Icons](#️-icons)
-9. [🔄 Changelog](#-changelog)
-10. [🐛 Bugs and TODO](#-bugs-and-todo)
+8. [⚖️ License](#️-license-1)
+9. [🖼️ Icons](#️-icons)
+10. [🔄 Changelog](#-changelog)
+11. [🐛 Bugs and TODO](#-bugs-and-todo)
 
 ## ✏️ In short
 
-> **Note**
-> This project was initially done in a week so do not expect crazy behavior and be immune to bugs.
+Useful Moderator is a Discord bot that aims to help moderators in their daily tasks. It is written in Python and uses the [discord.py](https://discordpy.readthedocs.io/en/latest) library.
 
-## 👩‍🏫 Usage
+The bot provides a set of commands, which are subdivided into `cogs` (or modules). Each cog is responsible for a specific set of commands.
+
+## 👩‍🏫 Usage & Setup
+
+> <picture>
+>   <source media="(prefers-color-scheme: light)" srcset="https://raw.githubusercontent.com/Mqxx/GitHub-Markdown/main/blockquotes/badge/light-theme/info.svg">
+>   <img alt="Info" src="https://raw.githubusercontent.com/Mqxx/GitHub-Markdown/main/blockquotes/badge/dark-theme/info.svg">
+> </picture><br>
+>
+> Please note we do not officially support Windows or MacOS, but we do provide some instructions for those who want to use it on these platforms.
 
 ## 💁 Get Help
 
@@ -55,15 +64,33 @@ Happy coding ! 🙂
 
 ## ⚖️ License
 
-This project is licensed under the AGPL-3.0 new or revised license. Please read the [LICENSE](LICENSE) file. Additionally, the following applies :
+## ⚖️ License
+
+This project is licensed under the AGPL-3.0 new or revised license. Please read the [LICENSE](LICENSE.md) file. Additionally :
 
 - Redistributions of source code must retain the above copyright notice, this list of conditions and the following disclaimer.
 
 - Redistributions in binary form must reproduce the above copyright notice, this list of conditions and the following disclaimer in the documentation and/or other materials provided with the distribution.
 
-- Neither the name of the useful-moderator authors nor the names of its contributors may be used to endorse or promote products derived from this software without specific prior written permission.
+- Neither the name of the Useful Moderator authors nor the names of its contributors may be used to endorse or promote products derived from this software without specific prior written permission.
 
-THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+```LICENSE
+Useful Moderator - Discord Bot
+Copyright (C) 2023 Thomas BOUYER
+
+This program is free software: you can redistribute it and/or modify
+it under the terms of the GNU Affero General Public License as published by
+the Free Software Foundation, either version 3 of the License, or
+(at your option) any later version.
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+GNU Affero General Public License for more details.
+
+You should have received a copy of the GNU Affero General Public License
+along with this program. If not, see <http://www.gnu.org/licenses/>.
+```
 
 ## 🖼️ Icons
 
@@ -81,5 +108,10 @@ Please read the [changelog](changelog.md) file for the full history !
 ## 🐛 Bugs and TODO
 
 **TODO** (first implementation version)
+
+- [ ] Admin Panel web interface
+- [ ] add settings and custom settings for users and guilds
+- [ ] MongoDB integration
+- [ ] ...
 
 **Known Bugs** (latest fix)
