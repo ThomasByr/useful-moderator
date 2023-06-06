@@ -1,9 +1,9 @@
-from typing import Optional
 import discord
 from discord import app_commands
 from discord.ext import commands
 
 import datetime
+from typing import Optional
 
 from ..helper import *
 from ..helper.logger import logger as log
@@ -63,7 +63,7 @@ class Sudo(commands.GroupCog):
       await send_channel_message(interaction.channel, message)
     except Exception as e:
       failed = True
-      embed = build_fail_embed(
+      embed = build_error_embed(
         title=f'{FAIL_EMOJI} error while sending message !',
         description=f'```{e}```',
       )
@@ -83,7 +83,7 @@ class Sudo(commands.GroupCog):
 
     except Exception as e:
       failed = True
-      embed = build_fail_embed(
+      embed = build_error_embed(
         title=f'{FAIL_EMOJI} error while editing message !',
         description=f'```{e}```',
       )
@@ -91,7 +91,7 @@ class Sudo(commands.GroupCog):
     if not found:
       # won't be executed if an exception was raised
       failed = True
-      embed = build_fail_embed(
+      embed = build_error_embed(
         title=f'{FAIL_EMOJI} error while editing message !',
         description='```No editable text message found.```',
       )
@@ -126,7 +126,7 @@ class Sudo(commands.GroupCog):
       await user.timeout(delta, reason=reason)
     except Exception as e:
       failed = True
-      embed = build_fail_embed(
+      embed = build_error_embed(
         title=f'{FAIL_EMOJI} error while timing out user `{user}` !',
         description=f'```{e}```',
       )
@@ -142,7 +142,7 @@ class Sudo(commands.GroupCog):
       await user.timeout(None)
     except Exception as e:
       failed = True
-      embed = build_fail_embed(
+      embed = build_error_embed(
         title=f'{FAIL_EMOJI} error while untiming out user `{user}` !',
         description=f'```{e}```',
       )
@@ -160,7 +160,7 @@ class Sudo(commands.GroupCog):
       await user.kick(reason=reason)
     except Exception as e:
       failed = True
-      embed = build_fail_embed(
+      embed = build_error_embed(
         title=f'{FAIL_EMOJI} error while kicking user `{user}` !',
         description=f'```{e}```',
       )
@@ -183,7 +183,7 @@ class Sudo(commands.GroupCog):
       await user.ban(reason=reason, delete_message_days=7 if del_msgs else 0)
     except Exception as e:
       failed = True
-      embed = build_fail_embed(
+      embed = build_error_embed(
         title=f'{FAIL_EMOJI} error while banning user `{user}` !',
         description=f'```{e}```',
       )
@@ -201,7 +201,7 @@ class Sudo(commands.GroupCog):
       await interaction.guild.unban(user, reason=reason)
     except Exception as e:
       failed = True
-      embed = build_fail_embed(
+      embed = build_error_embed(
         title=f'{FAIL_EMOJI} error while unbanning user `{user}` !',
         description=f'```{e}```',
       )

@@ -57,7 +57,7 @@ class BotLog(commands.GroupCog):
       await send_channel_file(interaction.channel, file)
     except Exception as e:
       failed = True
-      embed = build_fail_embed(
+      embed = build_error_embed(
         title=f'{FAIL_EMOJI} bot log dump failed !',
         description=f'```{e}```',
       )
@@ -120,7 +120,7 @@ class BotLog(commands.GroupCog):
 
     except Exception as e:
       failed = True
-      embed = build_fail_embed(
+      embed = build_error_embed(
         title=f'{FAIL_EMOJI} bot log filter failed !',
         description=f'```{e}```',
       )
@@ -154,7 +154,7 @@ class BotLog(commands.GroupCog):
 
     except Exception as e:
       failed = True
-      embed = build_fail_embed(
+      embed = build_error_embed(
         title=f'{FAIL_EMOJI} bot log filter failed !',
         description=f'```{e}```',
       )
@@ -176,7 +176,7 @@ class BotLog(commands.GroupCog):
         f.write('')
     except Exception as e:
       failed = True
-      embed = build_fail_embed(
+      embed = build_error_embed(
         title=f'{FAIL_EMOJI} bot log clear failed !',
         description=f'```{e}```',
       )

@@ -148,5 +148,6 @@ class UsefulClient(commands.AutoShardedBot):
     await self.add_cog(BotLog(self))
 
     await self.add_cog(Utils(self))
+    await self.add_cog(Poll(self))
 
     log.info('Setting up complete')

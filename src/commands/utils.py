@@ -48,7 +48,7 @@ class Utils(commands.GroupCog):
     embed = build_invite_embed(
       title='Invite Link',
       description=f'Click the link below to invite me to your server!\n\n'
-      f'[Invite me !]({self.__client.invite})',
+      f'[🔗 Invite me !]({self.__client.invite})',
     )
     # this one link exists... I swear
     await reply_with_embed(interaction, embed)

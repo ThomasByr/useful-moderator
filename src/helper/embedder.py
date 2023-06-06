@@ -6,9 +6,11 @@ __all__ = [
   'build_info_embed',
   'build_response_embed',
   'build_success_embed',
-  'build_fail_embed',
+  'build_error_embed',
   'build_help_embed',
   'build_invite_embed',
+  'build_poll_embed',
+  'build_poll_view',
 ]
 
 #%% base embedder
@@ -47,7 +49,6 @@ def build_info_embed(
   return build_embed(
     title=title,
     description=description,
-    colour=discord.Colour.blurple(),
   )
 
 
@@ -73,7 +74,7 @@ def build_success_embed(
   )
 
 
-def build_fail_embed(
+def build_error_embed(
   title: str = None,
   description: str = None,
 ) -> discord.Embed:
@@ -92,7 +93,6 @@ def build_help_embed(
   return build_embed(
     title=title,
     description=description,
-    colour=discord.Colour.blurple(),
     thumbnail=HELP_IMG,
   )
 
@@ -104,6 +104,28 @@ def build_invite_embed(
   return build_embed(
     title=title,
     description=description,
-    colour=discord.Colour.blurple(),
     thumbnail=INVITE_IMG,
   )
+
+
+def build_poll_embed(
+  title: str = None,
+  choices: list[str] = None,
+  author: str = None,
+  author_icon: str = None,
+) -> discord.Embed:
+  return build_embed(
+    title=title,
+    description='\n'.join([f'{NUMERIC_EMOJIS[i]} {choice}' for i, choice in enumerate(choices)]),
+    thumbnail=VOTE_IMG,
+    colour=discord.Colour.gold(),
+    footer=author,
+    footer_icon=author_icon,
+  )
+
+
+def build_poll_view(choices: list[str] = None,) -> discord.ui.View:
+  view = discord.ui.View()
+  for i, _ in enumerate(choices):
+    view.add_item(discord.ui.Button(custom_id=f'poll_{i}', emoji=NUMERIC_EMOJIS[i]))
+  return view

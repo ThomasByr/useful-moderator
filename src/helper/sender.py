@@ -5,6 +5,7 @@ __all__ = [
   'reply_with_embed',
   'edit_reply_with_embed',
   'reply_with_status_embed',
+  'send_poll_embed',
   'send_channel_message',
   'send_channel_file',
 ]
@@ -109,6 +110,36 @@ def reply_with_status_embed(
   ```
   """
   return send_embed(interaction, embed, ephemeral=True, delete_after=5 if not failed else None)
+
+
+def send_poll_embed(
+  interaction: discord.Interaction,
+  embed: discord.Embed,
+  view: discord.ui.View,
+) -> Coroutine[Any, Any, None]:
+  """
+  send a poll embed
+
+  ## Parameters
+  ```py
+  >>> interaction : discord.Interaction
+  ```
+  original interaction
+  ```py
+  >>> embed : discord.Embed
+  ```
+  embed to send
+  ```py
+  >>> view : discord.ui.View
+  ```
+  view to send
+
+  ## Returns
+  ```py
+  Coroutine[Any, Any, None] : the coroutine that sends the embed
+  ```
+  """
+  return interaction.response.send_message(embed=embed, view=view)
 
 
 def send_channel_message(channel: discord.TextChannel, message: str) -> Coroutine[Any, Any, None]:
