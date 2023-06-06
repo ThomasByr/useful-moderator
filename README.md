@@ -28,6 +28,13 @@ Useful Moderator is a Discord bot that aims to help moderators in their daily ta
 
 The bot provides a set of commands, which are subdivided into `cogs` (or modules). Each cog is responsible for a specific set of commands.
 
+> <picture>
+>   <source media="(prefers-color-scheme: light)" srcset="https://raw.githubusercontent.com/ThomasByr/useful-moderator/master/assets/images/invite.png" width="14px">
+>     <img alt="Invite" src="https://raw.githubusercontent.com/ThomasByr/useful-moderator/master/assets/images/invite.png" width="14px">
+> </picture> Click the link bellow to invite the bot to your server ! <br>
+>
+> [🔗 Invite ME](https://discord.com/oauth2/authorize?client_id=1041309668565332068&scope=bot&permissions=8)
+
 ## 👩‍🏫 Usage & Setup
 
 > <picture>
@@ -37,7 +44,51 @@ The bot provides a set of commands, which are subdivided into `cogs` (or modules
 >
 > Please note we do not officially support Windows or MacOS, but we do provide some instructions for those who want to use it on these platforms.
 
+You do not explicitly need a conda environment for the bot to run. But it is always recommended nontheless, especially because the next LTS of Ubuntu won't let users pip-install anything without a virtual environment.
+
+```bash
+# Clone the repository
+git clone https://github.com/ThomasByr/useful-moderator.git
+cd useful-moderator
+```
+
+You can create and activate a conda environment with the following commands :
+
+```bash
+# Create the environment
+conda create -n dsc python=3.11
+conda activate dsc
+```
+
+Then, install the dependencies :
+
+```bash
+# Install the dependencies
+python -m pip install -r requirements.txt
+```
+
+Finally, run the bot in the background with `bash run.bash` or type the following :
+
+```bash
+# Run the bot (lets you Ctrl+C to stop it)
+python useful_moderator.py
+```
+
 ## 💁 Get Help
+
+Inside the Discord app, you can type
+
+```txt
+/<GroupName> help
+```
+
+to get help about a specific group of commands. For example, you can type `/utils help` to get help about the `utils` group of commands.
+
+You can try to ping the bot in your guild to start 👋 :
+
+```txt
+/utils ping
+```
 
 ## 🔰 Support
 
@@ -95,6 +146,15 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
 ## 🖼️ Icons
 
 Icons (except [the logo(s)](assets/images/usefull_moderator.png)) are made by [Freepik](https://www.flaticon.com/authors/freepik) and [pixelmeetup](https://www.flaticon.com/authors/pixelmeetup) from [www.flaticon.com](https://www.flaticon.com/).
+
+Unless otherwise stated, all icons and logos are made by the author.
+Copyright (C) 2023 Thomas BOUYER, all rights reserved.
+
+Tools used :
+
+- [Microsoft Designer](https://designer.microsoft.com/)
+- [Clip Studio Paint](https://www.clipstudio.net/en)
+- [Canva](https://www.canva.com/)
 
 ## 🔄 Changelog
 
