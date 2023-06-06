@@ -5,6 +5,14 @@ from ..helper import *
 __all__ = ['User', 'Guild']
 
 
+class Tier(AutoNumberedEnum):
+  T1 = ()
+  T2 = ()
+  T3 = ()
+  T4 = ()
+  T5 = ()
+
+
 @dataclass
 class User:
   id: Snowflake
@@ -24,3 +32,4 @@ class User:
 class Guild:
   id: Snowflake
   custom_prefix: str = None
+  tier: Tier = Tier.T1

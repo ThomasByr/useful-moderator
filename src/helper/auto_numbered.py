@@ -59,3 +59,23 @@ class AutoNumberedEnum(Enum):
     ```
     """
     return f'{self.__class__.__name__}.{self.name}'
+
+  def __ge__(self, other: 'AutoNumberedEnum') -> bool:
+    if self.__class__ is other.__class__:
+      return self.value >= other.value
+    return NotImplemented
+
+  def __gt__(self, other: 'AutoNumberedEnum') -> bool:
+    if self.__class__ is other.__class__:
+      return self.value > other.value
+    return NotImplemented
+
+  def __le__(self, other: 'AutoNumberedEnum') -> bool:
+    if self.__class__ is other.__class__:
+      return self.value <= other.value
+    return NotImplemented
+
+  def __lt__(self, other: 'AutoNumberedEnum') -> bool:
+    if self.__class__ is other.__class__:
+      return self.value < other.value
+    return NotImplemented
