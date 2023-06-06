@@ -35,6 +35,10 @@
 #! along with this program. If not, see <http://www.gnu.org/licenses/>.
 
 import os
+import sys
+
+if sys.version_info < (3, 9):
+  raise RuntimeError('This program requires Python 3.9 or later.')
 
 from src import UsefulClient
 
