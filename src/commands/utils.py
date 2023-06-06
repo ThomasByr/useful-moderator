@@ -3,6 +3,7 @@ from discord import app_commands
 from discord.ext import commands
 
 from ..helper import *
+from ..helper import fmt
 
 __all__ = ['Utils']
 
@@ -11,7 +12,7 @@ class Utils(commands.GroupCog):
 
   def __init__(self, client: commands.AutoShardedBot):
     self.__client = client
-    logger.info('Utils cog loaded !')
+    fmt.info('Utils cog loaded !')
 
   @app_commands.command(name='help', description='Get help about a command')
   async def help(self, interaction: discord.Interaction):

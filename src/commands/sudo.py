@@ -6,16 +6,17 @@ from discord.ext import commands
 import datetime
 
 from ..helper import *
+from ..helper import fmt
 
 __all__ = ['Sudo']
 
 
-@app_commands.default_permissions(manage_guild=True)
+@app_commands.default_permissions(manage_guild=True, ban_members=True)
 class Sudo(commands.GroupCog):
 
   def __init__(self, client: commands.AutoShardedBot):
     self.__client = client
-    logger.info('Sudo cog loaded !')
+    fmt.info('Sudo cog loaded !')
 
   @app_commands.command(name='help', description='Get help about a command')
   async def help(self, interaction: discord.Interaction):
@@ -44,8 +45,7 @@ class Sudo(commands.GroupCog):
       inline=False,
     ).add_field(
       name='🚫 `ban`',
-      value=
-      'Ban a specific user from the guild (reason is optional). If `soft` is specified, the user will be banned but all messages will be kept.',
+      value='Ban a specific user from the guild (reason is optional).',
       inline=False,
     ).add_field(
       name='🚫 `unban`',
@@ -170,17 +170,17 @@ class Sudo(commands.GroupCog):
   @app_commands.describe(
     user='User to ban',
     reason='Reason for the ban (optional)',
-    soft='Soft ban (optional)',
+    del_msgs='Should the messages of the user be deleted ? (default: False)',
   )
   async def ban(self,
                 interaction: discord.Interaction,
                 user: discord.Member,
                 reason: Optional[str] = None,
-                soft: bool = False):
+                del_msgs: bool = False):
     embed = build_success_embed(title=f'{SUCCESS_EMOJI} user `{user}` has been banned !',)
     failed = False
     try:
-      await user.ban(reason=reason, delete_message_days=0 if soft else 7)
+      await user.ban(reason=reason, delete_message_days=7 if del_msgs else 0)
     except Exception as e:
       failed = True
       embed = build_fail_embed(

@@ -8,6 +8,7 @@ from discord.ext import commands
 import re
 
 from ..helper import *
+from ..helper import fmt
 
 __all__ = ['BotLog']
 
@@ -17,7 +18,7 @@ class BotLog(commands.GroupCog):
 
   def __init__(self, client: commands.AutoShardedBot):
     self.__client = client
-    logger.info('BotLog cog loaded !')
+    fmt.info('BotLog cog loaded !')
 
   @app_commands.command(name='help', description='Get help about a command')
   async def help(self, interaction: discord.Interaction):
