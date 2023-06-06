@@ -44,7 +44,7 @@ The bot provides a set of commands, which are subdivided into `cogs` (or modules
 >
 > Please note we do not officially support Windows or MacOS, but we do provide some instructions for those who want to use it on these platforms.
 
-You do not explicitly need a conda environment for the bot to run. But it is always recommended nontheless, especially because the next LTS of Ubuntu won't let users pip-install anything without a virtual environment.
+You do not explicitly need a conda environment for the bot to run. But it is always recommended nontheless, especially because the next LTS of Ubuntu won't let users pip-install anything without a virtual environment. At the time of writing, this bot requires `python >= 3.9` to run.
 
 ```bash
 # Clone the repository
@@ -172,6 +172,7 @@ Please read the [changelog](changelog.md) file for the full history !
 - [ ] Admin Panel web interface
 - [ ] add settings and custom settings for users and guilds
 - [ ] MongoDB integration
+- [ ] polls, auto responses and reactions, ...
 - [ ] ...
 
 **Known Bugs** (latest fix)
