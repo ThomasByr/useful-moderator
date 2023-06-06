@@ -1,12 +1,8 @@
 import os
 
-from typing import NoReturn
-
 from dotenv import load_dotenv
 
 import logging
-from typing_extensions import override
-from termcolor import colored
 
 from .formatter import *
 

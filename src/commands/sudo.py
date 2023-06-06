@@ -6,7 +6,7 @@ from discord.ext import commands
 import datetime
 
 from ..helper import *
-from ..helper import fmt
+from ..helper.logger import logger as log
 
 __all__ = ['Sudo']
 
@@ -16,7 +16,7 @@ class Sudo(commands.GroupCog):
 
   def __init__(self, client: commands.AutoShardedBot):
     self.__client = client
-    fmt.info('Sudo cog loaded !')
+    log.info('Sudo cog loaded !')
 
   @app_commands.command(name='help', description='Get help about a command')
   async def help(self, interaction: discord.Interaction):

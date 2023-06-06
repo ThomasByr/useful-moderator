@@ -3,7 +3,7 @@ import os
 from pymongo import MongoClient
 from pymongo.database import Database
 
-from ..helper import fmt
+from ..helper.logger import logger as log
 
 __all__ = ['UsefulDatabase']
 
@@ -33,30 +33,30 @@ class UsefulDatabase:
     return self.__db
 
   def connect(self):
-    fmt.debug('Connecting to database...')
+    log.debug('Connecting to database...')
     port_no = int(DB_PORT) if DB_PORT else None
     if DB_USER != '' and DB_PASSWD != '' and DB_URL != '':
       self.__client = MongoClient(CONNECTION_STRING, port=port_no)
       self.__db = self.client.useful
-      fmt.debug('Connected to database')
+      log.debug('Connected to database')
     else:
-      fmt.warning('No database credentials provided, skipping connection')
+      log.warning('No database credentials provided, skipping connection')
 
   def disconnect(self):
-    fmt.debug('Disconnecting from database...')
+    log.debug('Disconnecting from database...')
     if self.__client is not None:
       self.__client.close()
       self.__client = None
       self.__db = None
-      fmt.debug('Disconnected from database')
+      log.debug('Disconnected from database')
     else:
-      fmt.warning('No database connection to close')
+      log.warning('No database connection to close')
 
   def test(self):
-    fmt.info('Testing database connection...')
+    log.info('Testing database connection...')
     try:
       self.connect()
       self.disconnect()
-      fmt.info('Test successful')
+      log.info('Test successful')
     except Exception as e:
-      fmt.error(f'Test failed: {e}')
+      log.error(f'Test failed: {e}')

@@ -11,7 +11,8 @@ import datetime
 import pickle
 
 from ..helper import *
-from ..helper import fmt, logger
+from ..helper import logger
+from ..helper.logger import logger as log
 from ..commands import *
 from ..db import *
 
@@ -46,8 +47,8 @@ class UsefulClient(commands.AutoShardedBot):
 
   @override
   async def on_ready(self):
-    fmt.info(f'Logged in as {self.user} (ID: {self.user.id})')
-    fmt.info(f'Connected to {len(self.guilds)} guilds')
+    log.info(f'Logged in as {self.user} (ID: {self.user.id})')
+    log.info(f'Connected to {len(self.guilds)} guilds')
     await self.setup()
     await self.tree.sync()
     await self.change_presence(
@@ -57,14 +58,14 @@ class UsefulClient(commands.AutoShardedBot):
         name=f'v {__version__}',
       ),
     )
-    fmt.info('Messing around ...')
+    log.info('Messing around ...')
     self.__db.test()
 
     self.load_locals()
     signal.signal(signal.SIGINT, self.on_end_handler)
     signal.signal(signal.SIGTERM, self.on_end_handler)
 
-    fmt.info('Ready 🥳 !')
+    log.info('Ready 🥳 !')
 
   @override
   def run(self, token: str) -> None:
@@ -100,10 +101,10 @@ class UsefulClient(commands.AutoShardedBot):
     The frame object.
     """
     print('', end='\r')
-    fmt.info('Shutting down...')
+    log.info('Shutting down...')
     self.__db.disconnect()
     self.save_locals()
-    fmt.info('Shutdown complete')
+    log.info('Shutdown complete')
     sys.exit(0)
 
   def load_locals(self) -> None:
@@ -118,7 +119,7 @@ class UsefulClient(commands.AutoShardedBot):
       with open(os.path.join('data', 'local_guild_db.pickle'), 'rb') as f:
         self.__local_user_db = pickle.load(f)
     except FileNotFoundError:
-      fmt.warning('Local user database not found, creating new one')
+      log.warning('Local user database not found, creating new one')
       with open(os.path.join('data', 'local_user_db.pickle'), 'wb') as f:
         pickle.dump({}, f)
 
@@ -126,7 +127,7 @@ class UsefulClient(commands.AutoShardedBot):
       with open(os.path.join('data', 'local_guild_db.pickle'), 'rb') as f:
         self.__local_guild_db = pickle.load(f)
     except FileNotFoundError:
-      fmt.warning('Local guild database not found, creating new one')
+      log.warning('Local guild database not found, creating new one')
       with open(os.path.join('data', 'local_guild_db.pickle'), 'wb') as f:
         pickle.dump({}, f)
 
@@ -141,11 +142,11 @@ class UsefulClient(commands.AutoShardedBot):
       pickle.dump(self.__local_guild_db, f)
 
   async def setup(self):
-    fmt.info('Setting up...')
+    log.info('Setting up...')
 
     await self.add_cog(Sudo(self))
     await self.add_cog(BotLog(self))
 
     await self.add_cog(Utils(self))
 
-    fmt.info('Setting up complete')
+    log.info('Setting up complete')

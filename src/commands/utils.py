@@ -3,7 +3,7 @@ from discord import app_commands
 from discord.ext import commands
 
 from ..helper import *
-from ..helper import fmt
+from ..helper.logger import logger as log
 
 __all__ = ['Utils']
 
@@ -12,7 +12,7 @@ class Utils(commands.GroupCog):
 
   def __init__(self, client: commands.AutoShardedBot):
     self.__client = client
-    fmt.info('Utils cog loaded !')
+    log.info('Utils cog loaded !')
 
   @app_commands.command(name='help', description='Get help about a command')
   async def help(self, interaction: discord.Interaction):
@@ -57,7 +57,7 @@ class Utils(commands.GroupCog):
   async def uptime(self, interaction: discord.Interaction):
     embed = build_response_embed(title=f'Uptime: `.:..:..` ⏱️',)
     await reply_with_embed(interaction, embed)
+    # I swear there is somewhere a `uptime` property in the client
     uptime_: str = self.__client.uptime
     embed.title = f'Uptime: `{uptime_}` ⏱️'
-    # I swear there is somewhere a `uptime` property in the client
     await edit_reply_with_embed(interaction, embed)
