@@ -5,7 +5,6 @@ from discord.ext import commands
 from typing import Optional, Callable
 from typing_extensions import override
 
-from src.commands.poll import Pool_View
 from src.helper import discord
 
 from ..helper import *
@@ -34,7 +33,7 @@ class Pool_View(CustomView):
     for i, choice in enumerate(choices):
       self.with_new_choice(i, choice)
 
-  @discord.ui.button(emoji=FAIL_EMOJI, label='End the poll', style=discord.ButtonStyle.danger)
+  @discord.ui.button(emoji=SUCCESS_EMOJI, label='End the poll', style=discord.ButtonStyle.danger)
   async def end_poll(self, interaction: discord.Interaction, button: discord.ui.Button):
     if not interaction.user.resolved_permissions.manage_guild:
       embed = build_error_embed(
@@ -43,7 +42,15 @@ class Pool_View(CustomView):
       )
       await interaction.response.send_message(embed=embed, ephemeral=True)
       return
-    self.embed.description = '**Poll has ended!**\n\n' + self.embed.description
+    top_3 = sorted(
+      enumerate(self.results),
+      key=lambda x: x[1],
+      reverse=True,
+    )[:3]
+    trophies = '\n'.join(
+      f'{TROPHY_EMOJIS[i]} `{self.choices[i]}` : {self.results[i]}' for i, _ in top_3
+    )
+    self.embed.description = f'**Poll has ended!**\n{trophies}\n\n' + self.embed.description
     await interaction.response.defer()
     await self.disable_all_items()
     await self.interaction.edit_original_response(
@@ -67,6 +74,26 @@ class Pool_View(CustomView):
     )
     await interaction.response.send_message(embed=embed, ephemeral=True)
 
+  def choice_callback(self, i: int, choice: str) -> Callable[[discord.Interaction], None]:
+    ...
+
+  def with_new_choice(self, i: int, choice: str) -> 'Pool_View':
+    ...
+
+
+class MC_Poll_View(Pool_View):
+
+  def __init__(
+    self,
+    orig_inter: discord.Interaction,
+    embed: discord.Embed,
+    question: str,
+    choices: list[str],
+    allow_multiple: bool = False,
+  ):
+    super().__init__(orig_inter, embed, question, choices, allow_multiple)
+
+  @override
   def choice_callback(self, i: int, choice: str) -> Callable[[discord.Interaction], None]:
 
     async def callback(interaction: discord.Interaction):
@@ -106,22 +133,6 @@ class Pool_View(CustomView):
 
     return callback
 
-  def with_new_choice(self, i: int, choice: str) -> 'Pool_View':
-    ...
-
-
-class MC_Poll_View(Pool_View):
-
-  def __init__(
-    self,
-    orig_inter: discord.Interaction,
-    embed: discord.Embed,
-    question: str,
-    choices: list[str],
-    allow_multiple: bool = False,
-  ):
-    super().__init__(orig_inter, embed, question, choices, allow_multiple)
-
   @override
   def with_new_choice(self, i: int, choice: str) -> Pool_View:
     return self.with_button_callback(
@@ -141,6 +152,41 @@ class YN_Poll_View(Pool_View):
     question: str,
   ):
     super().__init__(orig_inter, embed, question, ['Yes', 'No'], False)
+
+  @override
+  def choice_callback(self, i: int, choice: str) -> Callable[[discord.Interaction], None]:
+
+    async def callback(interaction: discord.Interaction):
+      await interaction.response.defer()
+      u_choices: set[int] = set()
+      try:
+        u_choices = self.user_choices[interaction.user.id]
+      except KeyError:
+        self.user_choices[interaction.user.id] = u_choices
+      if i in u_choices:
+        self.results[i] -= 1
+        u_choices.remove(i)
+        await interaction.followup.send(f'You have removed your vote for `{choice}` !', ephemeral=True)
+      else:
+        r = False
+        if len(u_choices) > 0:
+          self.results[list(u_choices)[0]] -= 1
+          r = True
+        self.results[i] += 1
+        u_choices.clear()
+        u_choices.add(i)
+        await interaction.followup.send(
+          f'You have voted for `{choice}` !{" (removed previous vote)" if r else ""}',
+          ephemeral=True,
+        )
+
+      self.embed.description = '\n'.join(
+        build_description_line_for_yesno_poll_embed(i, self.results[i], sum(self.results))
+        for i, choice in enumerate(self.choices))
+      self.edit_button(f'choice_{i}', emoji=YESNO_EMOJIS[i], label=f'{self.results[i]}')
+      await self.interaction.edit_original_response(embed=self.embed, view=self)
+
+    return callback
 
   @override
   def with_new_choice(self, i: int, choice: str) -> Pool_View:

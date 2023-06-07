@@ -10,6 +10,7 @@ __all__ = [
   'build_help_embed',
   'build_invite_embed',
   'build_description_line_for_poll_embed',
+  'build_description_line_for_yesno_poll_embed',
   'build_poll_embed',
 ]
 
@@ -114,7 +115,16 @@ def build_description_line_for_poll_embed(i: int, choice: str, votes: int, total
     progress = int(votes / total_votes * width)
   else:
     progress = 0
-  return f'{NUMERIC_EMOJIS[i]} {choice} `{"█" * progress + " " * (width - progress)}` ({votes})'
+  return f'{NUMERIC_EMOJIS[i]} {choice}\n`{"█" * progress + " " * (width - progress)}` ({votes})\n'
+
+
+def build_description_line_for_yesno_poll_embed(i: int, votes: int, total_votes: int) -> str:
+  width = 10
+  if total_votes > 0:
+    progress = int(votes / total_votes * width)
+  else:
+    progress = 0
+  return f'{YESNO_EMOJIS[i]} {("YES", "NO")[i]}\n`{"█" * progress + " " * (width - progress)}` ({votes})\n'
 
 
 def build_poll_embed(
@@ -123,6 +133,16 @@ def build_poll_embed(
   author: str = None,
   author_icon: str = None,
 ) -> discord.Embed:
+  if 'Yes' in choices and 'No' in choices:
+    return build_embed(
+      title=title,
+      description='\n'.join(
+        [build_description_line_for_yesno_poll_embed(i, 0, 0) for i, choice in enumerate(choices)]),
+      thumbnail=VOTE_IMG,
+      colour=discord.Colour.gold(),
+      footer=author,
+      footer_icon=author_icon,
+    )
   return build_embed(
     title=title,
     description='\n'.join(
