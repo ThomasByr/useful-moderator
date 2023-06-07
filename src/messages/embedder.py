@@ -115,7 +115,7 @@ def build_description_line_for_poll_embed(i: int, choice: str, votes: int, total
     progress = int(votes / total_votes * width)
   else:
     progress = 0
-  return f'{NUMERIC_EMOJIS[i]} {choice}\n`{"█" * progress + " " * (width - progress)}` ({votes})\n'
+  return f'{NUMERIC_EMOJIS[i]} {choice}\n[`{"█" * progress + " " * (width - progress)}`] ({votes})\n'
 
 
 def build_description_line_for_yesno_poll_embed(i: int, votes: int, total_votes: int) -> str:
@@ -124,7 +124,7 @@ def build_description_line_for_yesno_poll_embed(i: int, votes: int, total_votes:
     progress = int(votes / total_votes * width)
   else:
     progress = 0
-  return f'{YESNO_EMOJIS[i]} {("YES", "NO")[i]}\n`{"█" * progress + " " * (width - progress)}` ({votes})\n'
+  return f'{YESNO_EMOJIS[i]} {("YES", "NO")[i]}\n[`{"█" * progress + " " * (width - progress)}`] ({votes})\n'
 
 
 def build_poll_embed(
