@@ -1,6 +1,6 @@
 import discord
 
-from .constants import *
+from ..helper.constants import *
 
 __all__ = [
   'build_info_embed',
@@ -9,8 +9,8 @@ __all__ = [
   'build_error_embed',
   'build_help_embed',
   'build_invite_embed',
+  'build_description_line_for_poll_embed',
   'build_poll_embed',
-  'build_poll_view',
 ]
 
 #%% base embedder
@@ -108,6 +108,15 @@ def build_invite_embed(
   )
 
 
+def build_description_line_for_poll_embed(i: int, choice: str, votes: int, total_votes: int) -> str:
+  width = 10
+  if total_votes > 0:
+    progress = int(votes / total_votes * width)
+  else:
+    progress = 0
+  return f'{NUMERIC_EMOJIS[i]} {choice} `{"█" * progress + " " * (width - progress)}` ({votes})'
+
+
 def build_poll_embed(
   title: str = None,
   choices: list[str] = None,
@@ -116,16 +125,10 @@ def build_poll_embed(
 ) -> discord.Embed:
   return build_embed(
     title=title,
-    description='\n'.join([f'{NUMERIC_EMOJIS[i]} {choice}' for i, choice in enumerate(choices)]),
+    description='\n'.join(
+      [build_description_line_for_poll_embed(i, choice, 0, 0) for i, choice in enumerate(choices)]),
     thumbnail=VOTE_IMG,
     colour=discord.Colour.gold(),
     footer=author,
     footer_icon=author_icon,
   )
-
-
-def build_poll_view(choices: list[str] = None,) -> discord.ui.View:
-  view = discord.ui.View()
-  for i, _ in enumerate(choices):
-    view.add_item(discord.ui.Button(custom_id=f'poll_{i}', emoji=NUMERIC_EMOJIS[i]))
-  return view

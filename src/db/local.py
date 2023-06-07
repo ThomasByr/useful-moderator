@@ -1,4 +1,5 @@
 from dataclasses import dataclass
+from discord import Message
 
 import math
 
@@ -49,6 +50,14 @@ class User:
 
   def xp_from_msg_len(self, msg_len: int) -> int:
     return int(2 * math.log10(msg_len)) + 5
+
+  def additional_xp_per_attachment(self, n_attachments: int) -> int:
+    return int(n_attachments + 1)
+
+  def process_message(self, msg: Message) -> int:
+    xp = self.xp_from_msg_len(len(msg.content))
+    xp += self.additional_xp_per_attachment(len(msg.attachments))
+    return self.add_xp(xp)
 
   def add_xp(self, xp: int) -> int:
     self.xp += xp

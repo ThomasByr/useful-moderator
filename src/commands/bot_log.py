@@ -9,6 +9,7 @@ import re
 
 from ..helper import *
 from ..helper.logger import logger as log
+from ..messages import *
 
 __all__ = ['BotLog']
 
