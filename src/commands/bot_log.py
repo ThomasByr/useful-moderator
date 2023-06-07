@@ -13,7 +13,7 @@ from ..helper.logger import logger as log
 __all__ = ['BotLog']
 
 
-@app_commands.default_permissions(manage_guild=True)
+@app_commands.default_permissions(administrator=True)
 class BotLog(commands.GroupCog):
 
   def __init__(self, client: commands.AutoShardedBot):
@@ -39,15 +39,10 @@ class BotLog(commands.GroupCog):
       name='♻️ `last`',
       value='Get the last few lines of the bot logs (defaults to 10).',
       inline=False,
-    ).add_field(
-      name='🧹 `clear`',
-      value='Clear the bot log, resetting it to an empty file.',
-      inline=False,
     )
 
     await reply_with_embed(interaction, embed)
 
-  @commands.is_owner()
   @app_commands.command(name='dump', description='Dump the bot log 📝')
   async def dump(self, interaction: discord.Interaction):
     file = discord.File('bot.log')
@@ -63,7 +58,6 @@ class BotLog(commands.GroupCog):
       )
     await reply_with_status_embed(interaction, embed, failed)
 
-  @commands.is_owner()
   @app_commands.command(name='filter', description='Filter the bot log based on some expressions 🔎')
   @app_commands.describe(
     expressions='Words or regex expressions (csv) to filter the bot log with',
@@ -126,7 +120,6 @@ class BotLog(commands.GroupCog):
       )
     await reply_with_status_embed(interaction, embed, failed)
 
-  @commands.is_owner()
   @app_commands.command(name='last', description='Get the last lines of the bot log ♻️')
   @app_commands.describe(
     lines='Number of lines to get (defaults to 10)',)
@@ -162,22 +155,5 @@ class BotLog(commands.GroupCog):
       embed = build_success_embed(
         title=f'{SUCCESS_EMOJI} bot log filtered !',
         description=f'```got {(n:=len(new_file))}/{lines.value} line{"s" if n > 1 else ""}```',
-      )
-    await reply_with_status_embed(interaction, embed, failed)
-
-  @commands.is_owner()
-  @app_commands.command(name='clear', description='Clear the bot log 🧹')
-  async def clear(self, interaction: discord.Interaction):
-    embed = build_success_embed(title=f'{SUCCESS_EMOJI} bot log cleared !',)
-    failed = False
-    try:
-      with open('bot.log', 'w') as f:
-        # may result in a non-empty file if the loggers are not flushed
-        f.write('')
-    except Exception as e:
-      failed = True
-      embed = build_error_embed(
-        title=f'{FAIL_EMOJI} bot log clear failed !',
-        description=f'```{e}```',
       )
     await reply_with_status_embed(interaction, embed, failed)

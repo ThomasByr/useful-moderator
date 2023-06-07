@@ -14,7 +14,7 @@ class MC_Poll_View(discord.ui.View):
   pass
 
 
-@app_commands.default_permissions(manage_messages=True)
+@app_commands.default_permissions(manage_guild=True)
 class Poll(commands.GroupCog):
 
   def __init__(self, client: commands.AutoShardedBot):

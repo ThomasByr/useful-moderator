@@ -1,5 +1,8 @@
 from typing import Any, Coroutine
+from arrow import Arrow
 import discord
+
+from .timestamp import *
 
 __all__ = [
   'reply_with_embed',
@@ -87,7 +90,8 @@ def reply_with_status_embed(
   failed: bool = False,
 ) -> Coroutine[Any, Any, None]:
   """
-  reply the sender with a status embed
+  reply the sender with a status embed\\
+  will automatically delete the embed after 5 seconds and add a timestamp to the description
 
   ## Parameters
   ```py
@@ -109,7 +113,14 @@ def reply_with_status_embed(
   Coroutine[Any, Any, None] : the coroutine that sends the embed
   ```
   """
-  return send_embed(interaction, embed, ephemeral=True, delete_after=5 if not failed else None)
+  s: int = 5
+  if not failed:
+    r = f'\nauto delete {format_timestamp(timestamp=Arrow.utcnow().shift(seconds=s))}'
+    try:
+      embed.description += r
+    except TypeError:
+      embed.description = r
+  return send_embed(interaction, embed, ephemeral=True, delete_after=s if not failed else None)
 
 
 def send_poll_embed(

@@ -11,7 +11,7 @@ from ..helper.logger import logger as log
 __all__ = ['Sudo']
 
 
-@app_commands.default_permissions(manage_guild=True, ban_members=True)
+@app_commands.default_permissions(manage_guild=True, moderate_members=True, ban_members=True)
 class Sudo(commands.GroupCog):
 
   def __init__(self, client: commands.AutoShardedBot):
@@ -105,9 +105,12 @@ class Sudo(commands.GroupCog):
   )
   @app_commands.choices(duration=[
     app_commands.Choice(name='1 minute', value=60),
+    app_commands.Choice(name='30 minutes', value=1800),
     app_commands.Choice(name='1 hour', value=3600),
-    app_commands.Choice(name='6 hours', value=21600),
+    app_commands.Choice(name='3 hours', value=10800),
+    app_commands.Choice(name='12 hours', value=43200),
     app_commands.Choice(name='1 day', value=86400),
+    app_commands.Choice(name='3 days', value=259200),
     app_commands.Choice(name='1 week', value=604800),
     app_commands.Choice(name='3 weeks', value=1814400),
   ])
