@@ -235,6 +235,7 @@ class Poll(commands.GroupCog):
     choice7='The eighth choice of the poll (optional)',
     choice8='The ninth choice of the poll (optional)',
     choice9='The tenth choice of the poll (optional)',
+    allow_multiple='Whether or not users can vote for multiple choices',
   )
   async def create(
     self,
