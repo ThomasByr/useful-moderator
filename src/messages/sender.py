@@ -19,14 +19,10 @@ __all__ = [
 def send_embed(
   interaction: discord.Interaction,
   embed: discord.Embed,
-  view: discord.ui.View = None,
   ephemeral: bool = False,
   delete_after: float = None,
 ):
-  return interaction.response.send_message(embed=embed,
-                                           view=view,
-                                           ephemeral=ephemeral,
-                                           delete_after=delete_after)
+  return interaction.response.send_message(embed=embed, ephemeral=ephemeral, delete_after=delete_after)
 
 
 def edit_embed(
@@ -195,7 +191,7 @@ def send_poll_embed(
   Coroutine[Any, Any, None] : the coroutine that sends the embed
   ```
   """
-  return send_embed(interaction, embed=embed, view=view)
+  return interaction.response.send_message(embed=embed, view=view)
 
 
 def send_channel_message(channel: discord.TextChannel, message: str) -> Coroutine[Any, Any, None]:

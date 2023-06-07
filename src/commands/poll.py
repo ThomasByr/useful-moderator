@@ -48,8 +48,7 @@ class Pool_View(CustomView):
       reverse=True,
     )[:3]
     trophies = '\n'.join(
-      f'{TROPHY_EMOJIS[i]} `{self.choices[i]}` : {self.results[i]}' for i, _ in top_3
-    )
+      f'{TROPHY_EMOJIS[i]} `{self.choices[j[0]]}` : {self.results[j[0]]}' for i, j in enumerate(top_3))
     self.embed.description = f'**Poll has ended!**\n{trophies}\n\n' + self.embed.description
     await interaction.response.defer()
     await self.disable_all_items()
@@ -99,6 +98,7 @@ class MC_Poll_View(Pool_View):
     async def callback(interaction: discord.Interaction):
       await interaction.response.defer()
       u_choices: set[int] = set()
+      prev_choice: int = None # can be a single int because we only need to store one choice
       try:
         u_choices = self.user_choices[interaction.user.id]
       except KeyError:
@@ -113,22 +113,27 @@ class MC_Poll_View(Pool_View):
           u_choices.add(i)
           await interaction.followup.send(f'You have voted for `{choice}` !', ephemeral=True)
       else:
-        r = False
-        if len(u_choices) > 0:
-          self.results[list(u_choices)[0]] -= 1
-          r = True
-        self.results[i] += 1
-        u_choices.clear()
-        u_choices.add(i)
-        await interaction.followup.send(
-          f'You have voted for `{choice}` !{" (removed previous vote)" if r else ""}',
-          ephemeral=True,
-        )
+        if i in u_choices:
+          self.results[i] -= 1
+          u_choices.remove(i)
+          await interaction.followup.send(f'You have removed your vote for `{choice}` !', ephemeral=True)
+        else:
+          if len(u_choices) > 0:
+            prev_choice = list(u_choices)[0]
+            self.results[prev_choice] -= 1
+            u_choices.clear()
+          self.results[i] += 1
+          u_choices.add(i)
+          await interaction.followup.send(f'You have voted for `{choice}` !{" (removed your previous vote)" if prev_choice is not None else ""}', ephemeral=True)
 
       self.embed.description = '\n'.join(
         build_description_line_for_poll_embed(i, choice, self.results[i], sum(self.results))
         for i, choice in enumerate(self.choices))
       self.edit_button(f'choice_{i}', emoji=NUMERIC_EMOJIS[i], label=f'{self.results[i]}')
+      if prev_choice is not None:
+        self.edit_button(f'choice_{prev_choice}',
+                         emoji=NUMERIC_EMOJIS[prev_choice],
+                         label=f'{self.results[prev_choice]}')
       await self.interaction.edit_original_response(embed=self.embed, view=self)
 
     return callback
@@ -159,6 +164,7 @@ class YN_Poll_View(Pool_View):
     async def callback(interaction: discord.Interaction):
       await interaction.response.defer()
       u_choices: set[int] = set()
+      prev_choice: int = None
       try:
         u_choices = self.user_choices[interaction.user.id]
       except KeyError:
@@ -171,6 +177,7 @@ class YN_Poll_View(Pool_View):
         r = False
         if len(u_choices) > 0:
           self.results[list(u_choices)[0]] -= 1
+          prev_choice = list(u_choices)[0]
           r = True
         self.results[i] += 1
         u_choices.clear()
@@ -184,6 +191,10 @@ class YN_Poll_View(Pool_View):
         build_description_line_for_yesno_poll_embed(i, self.results[i], sum(self.results))
         for i, choice in enumerate(self.choices))
       self.edit_button(f'choice_{i}', emoji=YESNO_EMOJIS[i], label=f'{self.results[i]}')
+      if prev_choice is not None:
+        self.edit_button(f'choice_{prev_choice}',
+                         emoji=YESNO_EMOJIS[prev_choice],
+                         label=f'{self.results[prev_choice]}')
       await self.interaction.edit_original_response(embed=self.embed, view=self)
 
     return callback

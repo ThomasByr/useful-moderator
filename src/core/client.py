@@ -30,7 +30,7 @@ class UsefulClient(commands.AutoShardedBot):
   def __init__(self, prefix: str = '!', invite: str = None, **options):
     intents = discord.Intents.all()
     self.__invite = invite
-    self.__start_time = datetime.datetime.utcnow()
+    self.__start_time = datetime.datetime.now()
     super().__init__(command_prefix=prefix, intents=intents, **options)
 
     self.__db = UsefulDatabase()
@@ -43,7 +43,11 @@ class UsefulClient(commands.AutoShardedBot):
 
   @property
   def uptime(self) -> str:
-    return str(datetime.datetime.utcnow() - self.__start_time).split('.')[0]
+    return str(datetime.datetime.now() - self.__start_time).split('.')[0]
+
+  @property
+  def start_time(self) -> float:
+    return self.__start_time.timestamp()
 
   @override
   async def on_ready(self):
