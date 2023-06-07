@@ -5,6 +5,9 @@ from discord.ext import commands
 from typing import Optional, Callable
 from typing_extensions import override
 
+from src.commands.poll import Pool_View
+from src.helper import discord
+
 from ..helper import *
 from ..helper.logger import logger as log
 from ..messages import *
@@ -12,7 +15,7 @@ from ..messages import *
 __all__ = ['Poll']
 
 
-class MC_Pool_View(CustomView):
+class Pool_View(CustomView):
 
   def __init__(self,
                orig_inter: discord.Interaction,
@@ -103,9 +106,46 @@ class MC_Pool_View(CustomView):
 
     return callback
 
-  def with_new_choice(self, i: int, choice: str) -> 'MC_Pool_View':
+  def with_new_choice(self, i: int, choice: str) -> 'Pool_View':
+    ...
+
+
+class MC_Poll_View(Pool_View):
+
+  def __init__(
+    self,
+    orig_inter: discord.Interaction,
+    embed: discord.Embed,
+    question: str,
+    choices: list[str],
+    allow_multiple: bool = False,
+  ):
+    super().__init__(orig_inter, embed, question, choices, allow_multiple)
+
+  @override
+  def with_new_choice(self, i: int, choice: str) -> Pool_View:
     return self.with_button_callback(
       emoji=NUMERIC_EMOJIS[i],
+      label='0',
+      custom_id=f'choice_{i}',
+      callback=self.choice_callback(i, choice),
+    )
+
+
+class YN_Poll_View(Pool_View):
+
+  def __init__(
+    self,
+    orig_inter: discord.Interaction,
+    embed: discord.Embed,
+    question: str,
+  ):
+    super().__init__(orig_inter, embed, question, ['Yes', 'No'], False)
+
+  @override
+  def with_new_choice(self, i: int, choice: str) -> Pool_View:
+    return self.with_button_callback(
+      emoji=YESNO_EMOJIS[i],
       label='0',
       custom_id=f'choice_{i}',
       callback=self.choice_callback(i, choice),
@@ -192,6 +232,16 @@ class Poll(commands.GroupCog):
     # create the embed
     embed = build_poll_embed(question, choices, interaction.user, interaction.user.display_avatar)
     # create a view with the buttons
-    view = MC_Pool_View(interaction, embed, question, choices, allow_multiple)
+    view = MC_Poll_View(interaction, embed, question, choices, allow_multiple)
+    # send the message
+    await send_poll_embed(interaction, embed, view)
+
+  @app_commands.command(name='yesno', description='Create a poll with only two choices : yes or no 👍')
+  @app_commands.describe(question='The question of the poll')
+  async def yesno(self, interaction: discord.Interaction, question: str):
+    # create the embed
+    embed = build_poll_embed(question, ['Yes', 'No'], interaction.user, interaction.user.display_avatar)
+    # create a view with the buttons
+    view = YN_Poll_View(interaction, embed, question)
     # send the message
     await send_poll_embed(interaction, embed, view)

@@ -13,3 +13,4 @@ FAIL_EMOJI = discord.PartialEmoji(name='across', id=1014227632461709383, animate
 
 GEAR_EMOJI = '⚙️'
 NUMERIC_EMOJIS = ['0️⃣', '1️⃣', '2️⃣', '3️⃣', '4️⃣', '5️⃣', '6️⃣', '7️⃣', '8️⃣', '9️⃣']
+YESNO_EMOJIS = ['✅', '❌']
