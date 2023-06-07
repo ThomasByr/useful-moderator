@@ -32,9 +32,8 @@ def send_embed(
 def edit_embed(
   interaction: discord.Interaction,
   embed: discord.Embed,
-  view: discord.ui.View = None,
 ):
-  return interaction.edit_original_response(embed=embed, view=view)
+  return interaction.edit_original_response(embed=embed)
 
 
 #%% custom functions

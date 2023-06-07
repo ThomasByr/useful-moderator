@@ -98,6 +98,7 @@ class MC_Pool_View(CustomView):
       self.embed.description = '\n'.join(
         build_description_line_for_poll_embed(i, choice, self.results[i], sum(self.results))
         for i, choice in enumerate(self.choices))
+      self.edit_button(f'choice_{i}', emoji=NUMERIC_EMOJIS[i], label=f'{self.results[i]}')
       await self.interaction.edit_original_response(embed=self.embed, view=self)
 
     return callback

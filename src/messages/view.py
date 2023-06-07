@@ -65,5 +65,7 @@ class CustomView(discord.ui.View):
   def edit_button(self, custom_id: str, **kwargs) -> 'CustomView':
     for item in self.children:
       if isinstance(item, discord.ui.Button) and item.custom_id == custom_id:
-        item.__init__(**kwargs)
+        for key, value in kwargs.items():
+          setattr(item, key, value)
+        break
     return self
