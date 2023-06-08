@@ -16,13 +16,16 @@ __all__ = ['Poll']
 
 class Pool_View(CustomView):
 
-  def __init__(self,
-               orig_inter: discord.Interaction,
-               embed: discord.Embed,
-               question: str,
-               choices: list[str],
-               allow_multiple: bool = False):
-    super().__init__(orig_inter=orig_inter)
+  def __init__(
+    self,
+    orig_inter: discord.Interaction,
+    embed: discord.Embed,
+    question: str,
+    choices: list[str],
+    allow_multiple: bool = False,
+    auto_close_in: int = None,
+  ):
+    super().__init__(orig_inter=orig_inter, timeout=auto_close_in)
     self.embed = embed
     self.question = question
     self.choices = choices
@@ -32,6 +35,23 @@ class Pool_View(CustomView):
 
     for i, choice in enumerate(choices):
       self.with_new_choice(i, choice)
+
+  @override
+  async def on_timeout(self) -> None:
+    await self.disable_all_items()
+    # end the poll
+    top_3 = sorted(
+      enumerate(self.results),
+      key=lambda x: x[1],
+      reverse=True,
+    )[:3]
+    trophies = '\n'.join(
+      f'{TROPHY_EMOJIS[i]} `{self.choices[j[0]]}` : {self.results[j[0]]}' for i, j in enumerate(top_3))
+    self.embed.description = f'**Poll has ended!**\n{trophies}'
+    await self.interaction.edit_original_response(
+      embed=self.embed,
+      view=self,
+    )
 
   @discord.ui.button(emoji=SUCCESS_EMOJI, label='End the poll', style=discord.ButtonStyle.danger)
   async def end_poll(self, interaction: discord.Interaction, button: discord.ui.Button):
@@ -49,7 +69,7 @@ class Pool_View(CustomView):
     )[:3]
     trophies = '\n'.join(
       f'{TROPHY_EMOJIS[i]} `{self.choices[j[0]]}` : {self.results[j[0]]}' for i, j in enumerate(top_3))
-    self.embed.description = f'**Poll has ended!**\n{trophies}\n\n' + self.embed.description
+    self.embed.description = f'**Poll has ended!**\n{trophies}'
     await interaction.response.defer()
     await self.disable_all_items()
     await self.interaction.edit_original_response(
@@ -89,8 +109,9 @@ class MC_Poll_View(Pool_View):
     question: str,
     choices: list[str],
     allow_multiple: bool = False,
+    auto_close_in: int = None,
   ):
-    super().__init__(orig_inter, embed, question, choices, allow_multiple)
+    super().__init__(orig_inter, embed, question, choices, allow_multiple, auto_close_in)
 
   @override
   def choice_callback(self, i: int, choice: str) -> Callable[[discord.Interaction], None]:
@@ -99,6 +120,7 @@ class MC_Poll_View(Pool_View):
       await interaction.response.defer()
       u_choices: set[int] = set()
       prev_choice: int = None # can be a single int because we only need to store one choice
+
       try:
         u_choices = self.user_choices[interaction.user.id]
       except KeyError:
@@ -124,16 +146,20 @@ class MC_Poll_View(Pool_View):
             u_choices.clear()
           self.results[i] += 1
           u_choices.add(i)
-          await interaction.followup.send(f'You have voted for `{choice}` !{" (removed your previous vote)" if prev_choice is not None else ""}', ephemeral=True)
+          await interaction.followup.send(
+            f'You have voted for `{choice}` !{" (removed your previous vote)" if prev_choice is not None else ""}',
+            ephemeral=True)
 
-      self.embed.description = '\n'.join(
-        build_description_line_for_poll_embed(i, choice, self.results[i], sum(self.results))
-        for i, choice in enumerate(self.choices))
+      t, d = build_description_line_for_poll_embed(i, choice, self.results[i], sum(self.results))
+      self.embed.set_field_at(i, name=t, value=d, inline=False)
       self.edit_button(f'choice_{i}', emoji=NUMERIC_EMOJIS[i], label=f'{self.results[i]}')
       if prev_choice is not None:
         self.edit_button(f'choice_{prev_choice}',
                          emoji=NUMERIC_EMOJIS[prev_choice],
                          label=f'{self.results[prev_choice]}')
+        t, d = build_description_line_for_poll_embed(prev_choice, self.choices[prev_choice],
+                                                     self.results[prev_choice], sum(self.results))
+        self.embed.set_field_at(prev_choice, name=t, value=d, inline=False)
       await self.interaction.edit_original_response(embed=self.embed, view=self)
 
     return callback
@@ -155,8 +181,9 @@ class YN_Poll_View(Pool_View):
     orig_inter: discord.Interaction,
     embed: discord.Embed,
     question: str,
+    auto_close_in: int = None,
   ):
-    super().__init__(orig_inter, embed, question, ['Yes', 'No'], False)
+    super().__init__(orig_inter, embed, question, ['Yes', 'No'], False, auto_close_in)
 
   @override
   def choice_callback(self, i: int, choice: str) -> Callable[[discord.Interaction], None]:
@@ -187,14 +214,16 @@ class YN_Poll_View(Pool_View):
           ephemeral=True,
         )
 
-      self.embed.description = '\n'.join(
-        build_description_line_for_yesno_poll_embed(i, self.results[i], sum(self.results))
-        for i, choice in enumerate(self.choices))
+      t, d = build_description_line_for_yesno_poll_embed(i, self.results[i], sum(self.results))
+      self.embed.set_field_at(i, name=t, value=d, inline=False)
       self.edit_button(f'choice_{i}', emoji=YESNO_EMOJIS[i], label=f'{self.results[i]}')
       if prev_choice is not None:
         self.edit_button(f'choice_{prev_choice}',
                          emoji=YESNO_EMOJIS[prev_choice],
                          label=f'{self.results[prev_choice]}')
+        t, d = build_description_line_for_yesno_poll_embed(prev_choice, self.results[prev_choice],
+                                                           sum(self.results))
+        self.embed.set_field_at(prev_choice, name=t, value=d, inline=False)
       await self.interaction.edit_original_response(embed=self.embed, view=self)
 
     return callback
@@ -247,7 +276,19 @@ class Poll(commands.GroupCog):
     choice8='The ninth choice of the poll (optional)',
     choice9='The tenth choice of the poll (optional)',
     allow_multiple='Whether or not users can vote for multiple choices',
+    auto_close_in='The time (in seconds) after which the poll will be closed automatically (optional)',
   )
+  @app_commands.choices(auto_close_in=[
+    app_commands.Choice(name='1 minute', value=60),
+    app_commands.Choice(name='30 minutes', value=1800),
+    app_commands.Choice(name='1 hour', value=3600),
+    app_commands.Choice(name='3 hours', value=10800),
+    app_commands.Choice(name='12 hours', value=43200),
+    app_commands.Choice(name='1 day', value=86400),
+    app_commands.Choice(name='3 days', value=259200),
+    app_commands.Choice(name='1 week', value=604800),
+    app_commands.Choice(name='3 weeks', value=1814400),
+  ])
   async def create(
     self,
     interaction: discord.Interaction,
@@ -263,6 +304,7 @@ class Poll(commands.GroupCog):
     choice8: Optional[str] = None,
     choice9: Optional[str] = None,
     allow_multiple: bool = False,
+    auto_close_in: Optional[app_commands.Choice[int]] = None,
   ):
     choices = [choice0, choice1, choice2, choice3, choice4, choice5, choice6, choice7, choice8, choice9]
     choices = [choice for choice in choices if choice is not None]
@@ -287,19 +329,42 @@ class Poll(commands.GroupCog):
     # the footer will contain the author of the poll
     # and users will be able to vote by clicking on buttons
 
+    auto_close_in = None if auto_close_in is None else auto_close_in.value
     # create the embed
-    embed = build_poll_embed(question, choices, interaction.user, interaction.user.display_avatar)
+    embed = build_poll_embed(question, choices, interaction.user, interaction.user.display_avatar,
+                             allow_multiple, auto_close_in)
     # create a view with the buttons
-    view = MC_Poll_View(interaction, embed, question, choices, allow_multiple)
+    view = MC_Poll_View(interaction, embed, question, choices, allow_multiple, auto_close_in)
     # send the message
     await send_poll_embed(interaction, embed, view)
 
   @app_commands.command(name='yesno', description='Create a poll with only two choices : yes or no 👍')
-  @app_commands.describe(question='The question of the poll')
-  async def yesno(self, interaction: discord.Interaction, question: str):
+  @app_commands.describe(
+    question='The question of the poll',
+    auto_close_in='The time (in seconds) after which the poll will be closed automatically (optional)',
+  )
+  @app_commands.choices(auto_close_in=[
+    app_commands.Choice(name='1 minute', value=60),
+    app_commands.Choice(name='30 minutes', value=1800),
+    app_commands.Choice(name='1 hour', value=3600),
+    app_commands.Choice(name='3 hours', value=10800),
+    app_commands.Choice(name='12 hours', value=43200),
+    app_commands.Choice(name='1 day', value=86400),
+    app_commands.Choice(name='3 days', value=259200),
+    app_commands.Choice(name='1 week', value=604800),
+    app_commands.Choice(name='3 weeks', value=1814400),
+  ])
+  async def yesno(
+    self,
+    interaction: discord.Interaction,
+    question: str,
+    auto_close_in: Optional[app_commands.Choice[int]] = None,
+  ):
+    auto_close_in = None if auto_close_in is None else auto_close_in.value
     # create the embed
-    embed = build_poll_embed(question, ['Yes', 'No'], interaction.user, interaction.user.display_avatar)
+    embed = build_poll_embed(question, ['Yes', 'No'], interaction.user, interaction.user.display_avatar,
+                             False, auto_close_in)
     # create a view with the buttons
-    view = YN_Poll_View(interaction, embed, question)
+    view = YN_Poll_View(interaction, embed, question, auto_close_in)
     # send the message
     await send_poll_embed(interaction, embed, view)
