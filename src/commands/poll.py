@@ -119,7 +119,9 @@ class MC_Poll_View(Pool_View):
     async def callback(interaction: discord.Interaction):
       await interaction.response.defer()
       u_choices: set[int] = set()
-      prev_choice: int = None # can be a single int because we only need to store one choice
+      prev_choice: int = None       # can be a single int because we only need to store one choice
+      prev_choice_emote: str = None # we need them to be None at first
+      prev_choice_str: str = None
 
       try:
         u_choices = self.user_choices[interaction.user.id]
@@ -129,26 +131,31 @@ class MC_Poll_View(Pool_View):
         if i in u_choices:
           self.results[i] -= 1
           u_choices.remove(i)
-          await interaction.followup.send(f'You have removed your vote for `{choice}` !', ephemeral=True)
+          embed = build_poll_followup_embed(NUMERIC_EMOJIS[i], choice, True)
+          await send_poll_followup_embed(interaction, embed)
         else:
           self.results[i] += 1
           u_choices.add(i)
-          await interaction.followup.send(f'You have voted for `{choice}` !', ephemeral=True)
+          embed = build_poll_followup_embed(NUMERIC_EMOJIS[i], choice)
+          await send_poll_followup_embed(interaction, embed)
       else:
         if i in u_choices:
           self.results[i] -= 1
           u_choices.remove(i)
-          await interaction.followup.send(f'You have removed your vote for `{choice}` !', ephemeral=True)
+          embed = build_poll_followup_embed(NUMERIC_EMOJIS[i], choice, True)
+          await send_poll_followup_embed(interaction, embed)
         else:
           if len(u_choices) > 0:
             prev_choice = list(u_choices)[0]
+            prev_choice_emote = NUMERIC_EMOJIS[prev_choice]
+            prev_choice_str = self.choices[prev_choice]
             self.results[prev_choice] -= 1
             u_choices.clear()
           self.results[i] += 1
           u_choices.add(i)
-          await interaction.followup.send(
-            f'You have voted for `{choice}` !{" (removed your previous vote)" if prev_choice is not None else ""}',
-            ephemeral=True)
+          embed = build_poll_followup_embed(NUMERIC_EMOJIS[i], choice, False, prev_choice_emote,
+                                            prev_choice_str)
+          await send_poll_followup_embed(interaction, embed)
 
       t, d = build_description_line_for_poll_embed(i, choice, self.results[i], sum(self.results))
       self.embed.set_field_at(i, name=t, value=d, inline=False)
@@ -192,6 +199,8 @@ class YN_Poll_View(Pool_View):
       await interaction.response.defer()
       u_choices: set[int] = set()
       prev_choice: int = None
+      prev_choice_emote: str = None
+      prev_choice_str: str = None
       try:
         u_choices = self.user_choices[interaction.user.id]
       except KeyError:
@@ -199,20 +208,19 @@ class YN_Poll_View(Pool_View):
       if i in u_choices:
         self.results[i] -= 1
         u_choices.remove(i)
-        await interaction.followup.send(f'You have removed your vote for `{choice}` !', ephemeral=True)
+        embed = build_poll_followup_embed(YESNO_EMOJIS[i], choice, True)
+        await send_poll_followup_embed(interaction, embed)
       else:
-        r = False
         if len(u_choices) > 0:
           self.results[list(u_choices)[0]] -= 1
           prev_choice = list(u_choices)[0]
-          r = True
+          prev_choice_emote = YESNO_EMOJIS[prev_choice]
+          prev_choice_str = self.choices[prev_choice]
         self.results[i] += 1
         u_choices.clear()
         u_choices.add(i)
-        await interaction.followup.send(
-          f'You have voted for `{choice}` !{" (removed previous vote)" if r else ""}',
-          ephemeral=True,
-        )
+        embed = build_poll_followup_embed(YESNO_EMOJIS[i], choice, False, prev_choice_emote, prev_choice_str)
+        await send_poll_followup_embed(interaction, embed)
 
       t, d = build_description_line_for_yesno_poll_embed(i, self.results[i], sum(self.results))
       self.embed.set_field_at(i, name=t, value=d, inline=False)

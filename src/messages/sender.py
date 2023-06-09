@@ -12,6 +12,7 @@ __all__ = [
   'send_poll_embed',
   'send_channel_message',
   'send_channel_file',
+  'send_poll_followup_embed',
 ]
 
 
@@ -192,6 +193,31 @@ def send_poll_embed(
   ```
   """
   return interaction.response.send_message(embed=embed, view=view)
+
+
+def send_poll_followup_embed(
+  interaction: discord.Interaction,
+  embed: discord.Embed,
+) -> Coroutine[Any, Any, None]:
+  """
+  send a poll followup embed
+
+  ## Parameters
+  ```py
+  >>> interaction : discord.Interaction
+  ```
+  original interaction
+  ```py
+  >>> embed : discord.Embed
+  ```
+  embed to send
+
+  ## Returns
+  ```py
+  Coroutine[Any, Any, None] : the coroutine that sends the embed
+  ```
+  """
+  return interaction.followup.send(embed=embed, ephemeral=True)
 
 
 def send_channel_message(channel: discord.TextChannel, message: str) -> Coroutine[Any, Any, None]:

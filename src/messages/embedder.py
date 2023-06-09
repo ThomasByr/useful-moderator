@@ -15,6 +15,7 @@ __all__ = [
   'build_description_line_for_poll_embed',
   'build_description_line_for_yesno_poll_embed',
   'build_poll_embed',
+  'build_poll_followup_embed',
 ]
 
 #%% base embedder
@@ -168,4 +169,21 @@ def build_poll_embed(
 
   embed.description = '' if auto_close_in is None else f'This poll will close itself {ft(future)}'
   embed.description += f'\n{"You can vote for multiple choices." if allow_multiple else "You can only vote for one choice."}'
+  return embed
+
+
+def build_poll_followup_embed(
+  emoji: str = None,
+  choice: str = None,
+  action_remove: bool = False,
+  prev_emoji: str = None,
+  prev_choice: str = None,
+) -> discord.Embed:
+  embed = build_embed(
+    title='Poll Followup',
+    description=f'You have {"un" if action_remove else ""}voted for {emoji} `{choice}`.',
+    colour=discord.Colour.green() if not action_remove else discord.Colour.red(),
+  )
+  if prev_choice is not None:
+    embed.description += f'Your previous vote for {prev_emoji} `{prev_choice}` has been removed.'
   return embed
