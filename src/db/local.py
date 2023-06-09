@@ -6,7 +6,7 @@ import math
 from .auto_response_data import *
 from ..helper import *
 
-__all__ = ['User', 'Guild']
+__all__ = ['User', 'Guild', 'Tier']
 
 
 class Tier(AutoNumberedEnum):
@@ -36,7 +36,7 @@ class Tier(AutoNumberedEnum):
 
 @dataclass
 class User:
-  id: Snowflake
+  id: int
   xp: int = 0
 
   def __post_init__(self):
@@ -66,7 +66,30 @@ class User:
 
 @dataclass
 class Guild:
-  id: Snowflake
+  id: int
   tier: Tier = Tier.T1
 
   auto_responses: list[AutoResponseData] = None
+
+  def __post_init__(self):
+    if self.auto_responses is None:
+      self.auto_responses = []
+
+  def to_dict(self) -> dict:
+    return {
+      'id': self.id,
+      'tier': self.tier.value,
+      'auto_responses': [d.to_dict() for d in self.auto_responses],
+    }
+
+  @classmethod
+  def from_dict(cls, d: dict) -> 'Guild':
+    return cls(
+      id=d['id'],
+      tier=Tier(d['tier']),
+      auto_responses=[AutoResponseData.from_dict(ad) for ad in d['auto_responses']],
+    )
+
+  @staticmethod
+  def new(id: int) -> 'Guild':
+    return Guild(id=id)

@@ -8,7 +8,6 @@ from typing_extensions import override
 from discord.ext import commands
 
 import datetime
-import pickle
 
 from ..helper import *
 from ..helper import logger
@@ -34,8 +33,6 @@ class UsefulClient(commands.AutoShardedBot):
     super().__init__(command_prefix=prefix, intents=intents, **options)
 
     self.__db = UsefulDatabase()
-    self.__local_user_db: dict[Snowflake, User] = {}
-    self.__local_guild_db: dict[Snowflake, Guild] = {}
 
   @property
   def invite(self) -> str:
@@ -54,6 +51,8 @@ class UsefulClient(commands.AutoShardedBot):
     log.info(f'Logged in as {self.user} (ID: {self.user.id})')
     log.info(f'Connected to {len(self.guilds)} guilds')
     await self.setup()
+
+    log.info('Messing around ...')
     await self.tree.sync()
     await self.change_presence(
       status=discord.Status.do_not_disturb,
@@ -62,10 +61,8 @@ class UsefulClient(commands.AutoShardedBot):
         name=f'v {__version__}',
       ),
     )
-    log.info('Messing around ...')
     self.__db.test()
 
-    self.load_locals()
     signal.signal(signal.SIGINT, self.on_end_handler)
     signal.signal(signal.SIGTERM, self.on_end_handler)
 
@@ -107,43 +104,8 @@ class UsefulClient(commands.AutoShardedBot):
     print('', end='\r')
     log.info('Shutting down...')
     self.__db.disconnect()
-    self.save_locals()
     log.info('Shutdown complete')
     sys.exit(0)
-
-  def load_locals(self) -> None:
-    """
-    Loads the local user and guild database from the pickle file.\\
-    Searches for the files in the `data` directory.
-    """
-    if not os.path.exists('data'):
-      os.mkdir('data')
-
-    try:
-      with open(os.path.join('data', 'local_guild_db.pickle'), 'rb') as f:
-        self.__local_user_db = pickle.load(f)
-    except FileNotFoundError:
-      log.warning('Local user database not found, creating new one')
-      with open(os.path.join('data', 'local_user_db.pickle'), 'wb') as f:
-        pickle.dump({}, f)
-
-    try:
-      with open(os.path.join('data', 'local_guild_db.pickle'), 'rb') as f:
-        self.__local_guild_db = pickle.load(f)
-    except FileNotFoundError:
-      log.warning('Local guild database not found, creating new one')
-      with open(os.path.join('data', 'local_guild_db.pickle'), 'wb') as f:
-        pickle.dump({}, f)
-
-  def save_locals(self) -> None:
-    """
-    Saves the local user and guild database to the pickle file.\\
-    Saves the files in the `data` directory.
-    """
-    with open(os.path.join('data', 'local_user_db.pickle'), 'wb') as f:
-      pickle.dump(self.__local_user_db, f)
-    with open(os.path.join('data', 'local_guild_db.pickle'), 'wb') as f:
-      pickle.dump(self.__local_guild_db, f)
 
   async def setup(self):
     log.info('Setting up...')
