@@ -7,6 +7,7 @@
 [![GitHub latest commit](https://badgen.net/github/last-commit/ThomasByr/useful-moderator)](https://gitHub.com/ThomasByr/useful-moderator/commit/)
 [![Maintenance](https://img.shields.io/badge/maintained%3F-yes-green.svg)](https://GitHub.com/ThomasByr/useful-moderator/graphs/commit-activity)
 
+[![Python Package Conda&Hatch](https://github.com/ThomasByr/useful-moderator/actions/workflows/python-package-conda.yml/badge.svg)](https://github.com/ThomasByr/useful-moderator/actions/workflows/python-package-conda.yml)
 [![GitHub version](https://badge.fury.io/gh/ThomasByr%2Fuseful-moderator.svg)](https://github.com/ThomasByr/useful-moderator)
 [![Author](https://img.shields.io/badge/author-@ThomasByr-blue)](https://github.com/ThomasByr)
 
@@ -161,7 +162,15 @@ Tools used :
 Please read the [changelog](changelog.md) file for the full history !
 
 <details>
-    <summary> (click here to expand) </summary>
+  <summary> First Beta Dev Release (click here to expand) </summary>
+
+**v0.1** send help ?
+
+- re-fork of [Useful Moderator](https://github.com/thomasByr/useful-moderator)
+- added `xp` group of commands (which is removed for now)
+- added all legal and github related stuff
+- `poll`s are now working 🎉 !
+- added `roles` for admins to setup persistent reactions roles
 
 </details>
 
@@ -173,6 +182,7 @@ Please read the [changelog](changelog.md) file for the full history !
 - [ ] add settings and custom settings for users and guilds
 - [ ] MongoDB integration
 - [ ] polls, auto responses and reactions, ...
+- [ ] reactions roles with persistent views
 - [ ] ...
 
 **Known Bugs** (latest fix)
