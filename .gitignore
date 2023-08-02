@@ -25,7 +25,8 @@ var/
 *.egg
 
 # Testing
-**/[Tt]est*
+# **/[Tt]est*
+# *[Tt]est.ipynb
 
 # PyInstaller
 #  Usually these files are written by a python script from a template
