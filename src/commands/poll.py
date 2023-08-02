@@ -1,11 +1,9 @@
+from collections.abc import Callable
+from typing_extensions import override
+
 import discord
 from discord import app_commands
 from discord.ext import commands
-
-from typing import Optional, Callable
-from typing_extensions import override
-
-from src.helper import discord
 
 from ..helper import *
 from ..helper.logger import logger as log
@@ -53,8 +51,8 @@ class Pool_View(CustomView):
       view=self,
     )
 
-  @discord.ui.button(emoji=SUCCESS_EMOJI, label='End the poll', style=discord.ButtonStyle.danger)
-  async def end_poll(self, interaction: discord.Interaction, button: discord.ui.Button):
+  @discord.ui.button(emoji=SUCCESS_EMOJI, label='End the poll', style=discord.ButtonStyle.primary)
+  async def end_poll(self, interaction: discord.Interaction, _: discord.ui.Button):
     if not interaction.user.resolved_permissions.manage_guild:
       embed = build_error_embed(
         title='You do not have the required permissions !',
@@ -77,8 +75,8 @@ class Pool_View(CustomView):
       view=self,
     )
 
-  @discord.ui.button(emoji=GEAR_EMOJI, label='Edit', style=discord.ButtonStyle.blurple)
-  async def edit_poll(self, interaction: discord.Interaction, button: discord.ui.Button):
+  @discord.ui.button(emoji=GEAR_EMOJI, style=discord.ButtonStyle.blurple)
+  async def edit_poll(self, interaction: discord.Interaction, _: discord.ui.Button):
     if not interaction.user.resolved_permissions.manage_guild:
       embed = build_error_embed(
         title='You do not have the required permissions !',
@@ -93,25 +91,14 @@ class Pool_View(CustomView):
     )
     await interaction.response.send_message(embed=embed, ephemeral=True)
 
-  def choice_callback(self, i: int, choice: str) -> Callable[[discord.Interaction], None]:
+  def choice_callback(self, i: int, choice: str) -> Callable[[discord.Interaction], None]: # pylint: disable=unused-argument
     ...
 
-  def with_new_choice(self, i: int, choice: str) -> 'Pool_View':
+  def with_new_choice(self, i: int, choice: str) -> 'Pool_View': # pylint: disable=unused-argument
     ...
 
 
 class MC_Poll_View(Pool_View):
-
-  def __init__(
-    self,
-    orig_inter: discord.Interaction,
-    embed: discord.Embed,
-    question: str,
-    choices: list[str],
-    allow_multiple: bool = False,
-    auto_close_in: int = None,
-  ):
-    super().__init__(orig_inter, embed, question, choices, allow_multiple, auto_close_in)
 
   @override
   def choice_callback(self, i: int, choice: str) -> Callable[[discord.Interaction], None]:
@@ -138,24 +125,23 @@ class MC_Poll_View(Pool_View):
           u_choices.add(i)
           embed = build_poll_followup_embed(NUMERIC_EMOJIS[i], choice)
           await send_poll_followup_embed(interaction, embed)
+      elif i in u_choices:
+        self.results[i] -= 1
+        u_choices.remove(i)
+        embed = build_poll_followup_embed(NUMERIC_EMOJIS[i], choice, True)
+        await send_poll_followup_embed(interaction, embed)
       else:
-        if i in u_choices:
-          self.results[i] -= 1
-          u_choices.remove(i)
-          embed = build_poll_followup_embed(NUMERIC_EMOJIS[i], choice, True)
-          await send_poll_followup_embed(interaction, embed)
-        else:
-          if len(u_choices) > 0:
-            prev_choice = list(u_choices)[0]
-            prev_choice_emote = NUMERIC_EMOJIS[prev_choice]
-            prev_choice_str = self.choices[prev_choice]
-            self.results[prev_choice] -= 1
-            u_choices.clear()
-          self.results[i] += 1
-          u_choices.add(i)
-          embed = build_poll_followup_embed(NUMERIC_EMOJIS[i], choice, False, prev_choice_emote,
-                                            prev_choice_str)
-          await send_poll_followup_embed(interaction, embed)
+        if len(u_choices) > 0:
+          prev_choice = list(u_choices)[0]
+          prev_choice_emote = NUMERIC_EMOJIS[prev_choice]
+          prev_choice_str = self.choices[prev_choice]
+          self.results[prev_choice] -= 1
+          u_choices.clear()
+        self.results[i] += 1
+        u_choices.add(i)
+        embed = build_poll_followup_embed(NUMERIC_EMOJIS[i], choice, False, prev_choice_emote,
+                                          prev_choice_str)
+        await send_poll_followup_embed(interaction, embed)
 
       t, d = build_description_line_for_poll_embed(i, choice, self.results[i], sum(self.results))
       self.embed.set_field_at(i, name=t, value=d, inline=False)
@@ -250,7 +236,7 @@ class YN_Poll_View(Pool_View):
 class Poll(commands.GroupCog):
 
   def __init__(self, client: commands.AutoShardedBot):
-    self.__client = client
+    self.__client = client # pylint: disable=unused-private-member
     log.info('Poll cog loaded !')
 
   @app_commands.command(name='help', description='Get help about a command')
@@ -303,17 +289,18 @@ class Poll(commands.GroupCog):
     question: str,
     choice0: str,
     choice1: str,
-    choice2: Optional[str] = None,
-    choice3: Optional[str] = None,
-    choice4: Optional[str] = None,
-    choice5: Optional[str] = None,
-    choice6: Optional[str] = None,
-    choice7: Optional[str] = None,
-    choice8: Optional[str] = None,
-    choice9: Optional[str] = None,
+    choice2: str | None = None,
+    choice3: str | None = None,
+    choice4: str | None = None,
+    choice5: str | None = None,
+    choice6: str | None = None,
+    choice7: str | None = None,
+    choice8: str | None = None,
+    choice9: str | None = None,
     allow_multiple: bool = False,
-    auto_close_in: Optional[app_commands.Choice[int]] = None,
-  ):
+    auto_close_in: app_commands.Choice[int] | None = None,
+  ):                                                       # pylint: disable=too-many-arguments
+
     choices = [choice0, choice1, choice2, choice3, choice4, choice5, choice6, choice7, choice8, choice9]
     choices = [choice for choice in choices if choice is not None]
     if len(choices) < 2:
@@ -330,12 +317,6 @@ class Poll(commands.GroupCog):
       )
       await reply_with_status_embed(interaction, embed, failed=True)
       return
-
-    # create the poll which will consist of an embed
-    # with the question as title and the choices as fields
-    # and a live view of the results
-    # the footer will contain the author of the poll
-    # and users will be able to vote by clicking on buttons
 
     auto_close_in = None if auto_close_in is None else auto_close_in.value
     # create the embed
@@ -366,7 +347,7 @@ class Poll(commands.GroupCog):
     self,
     interaction: discord.Interaction,
     question: str,
-    auto_close_in: Optional[app_commands.Choice[int]] = None,
+    auto_close_in: app_commands.Choice[int] | None = None,
   ):
     auto_close_in = None if auto_close_in is None else auto_close_in.value
     # create the embed

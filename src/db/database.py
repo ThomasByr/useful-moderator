@@ -1,21 +1,20 @@
 import os
 
-from pymongo import MongoClient
-from pymongo.database import Database
+from collections.abc import Generator
 
-from .local import *
-from .auto_response_data import *
+from pymongo import MongoClient
+from pymongo.collection import Collection
 
 from ..helper.logger import logger as log
+from .structs import *
 
 __all__ = ['UsefulDatabase']
 
 DB_USER = os.getenv('DB_USER', '')
 DB_PASSWD = os.getenv('DB_PASSWD', '')
-DB_NAME = os.getenv('DB_NAME', '')
 DB_URL = os.getenv('DB_URL', '')
 DB_PORT = os.getenv('DB_PORT', None)
-CONNECTION_STRING = f'mongodb+srv://{DB_USER}:{DB_PASSWD}@{DB_NAME}.{DB_URL}/?retryWrites=true&w=majority'
+CONNECTION_STRING = f'mongodb+srv://{DB_USER}:{DB_PASSWD}@{DB_URL}/?retryWrites=true&w=majority'
 
 
 class UsefulDatabase:
@@ -26,25 +25,37 @@ class UsefulDatabase:
 
   def __init__(self):
     self.__client: MongoClient = None
-    self.__db: Database = None
 
   @property
   def client(self) -> MongoClient:
     return self.__client
 
   @property
-  def db(self):
-    return self.__db
+  def tests_collection(self) -> Collection:
+    return self.client.usefull.tests
+
+  @property
+  def users_collection(self) -> Collection:
+    return self.client.usefull.users
+
+  @property
+  def guilds_collection(self) -> Collection:
+    return self.client.usefull.guilds
+
+  @property
+  def tasks_collection(self) -> Collection:
+    ...
 
   def connect(self) -> bool:
     log.debug('Connecting to database...')
-    port_no = int(DB_PORT) if DB_PORT else None
     r = False
-    if DB_USER != '' and DB_PASSWD != '' and DB_NAME != '' and DB_URL != '':
-      self.__client = MongoClient(CONNECTION_STRING, port=port_no)
-      self.__db = self.client.useful
-      log.debug('Connected to database')
-      r = True
+    if DB_USER != '' and DB_PASSWD != '':
+      try:
+        self.__client = MongoClient(CONNECTION_STRING)
+        log.debug('Connected to database')
+        r = True
+      except Exception as e: # pylint: disable=broad-except
+        log.error('Could not connect to database: %s', e)
     else:
       log.warning('No database credentials provided, skipping connection')
     return r
@@ -55,7 +66,6 @@ class UsefulDatabase:
     if self.__client is not None:
       self.__client.close()
       self.__client = None
-      self.__db = None
       log.debug('Disconnected from database')
       r = True
     else:
@@ -66,34 +76,70 @@ class UsefulDatabase:
     log.info('Testing database connection...')
     try:
       if self.connect():
-        self.db.test.insert_one({'test': 'test'})
-        self.db.test.delete_one({'test': 'test'})
+        self.tests_collection.insert_one({'test': 'test'})
+        self.tests_collection.delete_one({'test': 'test'})
         self.disconnect()
       log.info('Test successful')
-    except Exception as e:
-      log.error(f'Test failed: {e}')
+    except Exception as e: # pylint: disable=broad-except
+      log.error('Test failed: %s', e)
 
-  def __enter__(self):
+  def __enter__(self) -> 'UsefulDatabase':
     self.connect()
     return self
 
-  def __exit__(self, exc_type, exc_val, exc_tb):
+  def __exit__(self, exc_type, exc_val, exc_tb) -> bool:
     self.disconnect()
     return False
 
-  def add_guild(self, guild: Guild):
-    if not isinstance(guild, Guild):
-      raise TypeError(f'Expected Guild, got {type(guild)}')
-    if self.client is None:
-      raise RuntimeError('Database not connected')
-    guild_id = guild.id
-    self.db.guilds.update_one({'id': guild_id}, {'$set': guild.to_dict()}, upsert=True)
+  def __del__(self):
+    if self.client is not None:
+      self.disconnect()
 
-  def get_guild(self, guild_id: int) -> Guild:
-    if self.client is None:
-      raise RuntimeError('Database not connected')
-    guild_dict = self.db.guilds.find_one({'id': guild_id})
-    if guild_dict is None:
-      log.error(f'Guild {guild_id} not found in database')
-      return None
-    return Guild.from_dict(guild_dict)
+  def __get_user_entry(self, user_id: int) -> dict:
+    return self.users_collection.find_one({'user_id': user_id})
+
+  def create_user(self, user_id: int, username: str) -> bool:
+    """Creates a new user and returns True if the user was created"""
+    if self.__get_user_entry(user_id) is not None:
+      return False
+
+    self.users_collection.insert_one({
+      'user_id': user_id,
+      'user_name': username,
+      'user_xp': 0,
+    })
+    return True
+
+  def add_xp_to_user(self, user_id: int, amount: int) -> int:
+    """Updates user user_xp and return user_xp before update or -1 if the user does not exist"""
+    if (entry := self.__get_user_entry(user_id)) is not None:
+      self.users_collection.update_one(
+        {'user_id': user_id},
+        {'$inc': {
+          'user_xp': entry['user_xp'] + amount
+        }},
+      )
+      return entry['user_xp'] # return old xp
+    return -1
+
+  def get_user_xp(self, user_id: int) -> int:
+    """Returns user user_xp or -1 if the user does not exist"""
+    # BDMFR -> Utilisateurs -> {user_id, user_xp}
+    entry = self.__get_user_entry(user_id)
+    return entry['user_xp'] if entry is not None else -1
+
+  def users(self) -> Generator[ExportUserEntry, None, None]:
+    """Returns a generator of all users"""
+    for entry in self.users_collection.find():
+      yield ExportUserEntry(
+        id=entry['user_id'],
+        xp=entry['user_xp'],
+      )
+
+  def top_users(self, n: int) -> Generator[ExportUserEntry, None, None]:
+    """Returns a generator of the top n users"""
+    for entry in self.users_collection.find().sort('user_xp', -1).limit(n):
+      yield ExportUserEntry(
+        id=entry['user_id'],
+        xp=entry['user_xp'],
+      )

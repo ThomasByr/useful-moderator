@@ -2,8 +2,6 @@ import discord
 from discord import app_commands
 from discord.ext import commands
 
-from typing import Optional
-
 from ..helper import *
 from ..helper.logger import logger as log
 from ..messages import *
@@ -40,7 +38,7 @@ class Utils(commands.GroupCog):
 
   @app_commands.command(name='ping', description='Test my ping to Discord\'s endpoint 🏓')
   async def ping(self, interaction: discord.Interaction):
-    embed = build_response_embed(title=f'Pong! `...ms` 🏓',)
+    embed = build_response_embed(title='Pong! `...ms` 🏓',)
     await reply_with_embed(interaction, embed)
     ping_ = f'{round(self.__client.latency * 1000)}ms'
     embed.title = f'Pong! `{ping_}` 🏓'
@@ -51,7 +49,7 @@ class Utils(commands.GroupCog):
     app_commands.Choice(name='Admin', value='admin'),
     app_commands.Choice(name='Basic', value='basic')
   ])
-  async def invite(self, interaction: discord.Interaction, perms: Optional[app_commands.Choice[str]] = None):
+  async def invite(self, interaction: discord.Interaction, perms: app_commands.Choice[str] | None = None):
     permissions: dict[str, int] = {
       'admin': 8,
       'basic': 277025705024,
@@ -69,7 +67,7 @@ class Utils(commands.GroupCog):
 
   @app_commands.command(name='uptime', description='Get the bot\'s uptime ⏱️')
   async def uptime(self, interaction: discord.Interaction):
-    embed = build_response_embed(title=f'Uptime: `.:..:..` ⏱️',)
+    embed = build_response_embed(title='Uptime: `.:..:..` ⏱️',)
     await reply_with_embed(interaction, embed)
     # I swear there is somewhere a `uptime` property in the client
     uptime_: str = self.__client.uptime

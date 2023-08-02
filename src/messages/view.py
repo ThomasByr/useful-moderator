@@ -1,4 +1,4 @@
-from typing import Optional, Callable
+from collections.abc import Callable
 from typing_extensions import override
 
 import discord
@@ -8,7 +8,7 @@ __all__ = ['CustomView']
 
 class CustomView(discord.ui.View):
 
-  def __init__(self, orig_inter: discord.Integration, timeout: Optional[int] = None):
+  def __init__(self, orig_inter: discord.Interaction, timeout: int | None = None):
     super().__init__()
     self.interaction = orig_inter
     self.timeout = timeout

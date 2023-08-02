@@ -1,9 +1,8 @@
+import datetime
+
 import discord
 from discord import app_commands
 from discord.ext import commands
-
-import datetime
-from typing import Optional
 
 from ..helper import *
 from ..helper.logger import logger as log
@@ -62,7 +61,9 @@ class Sudo(commands.GroupCog):
     failed = False
     try:
       await send_channel_message(interaction.channel, message)
-    except Exception as e:
+
+    except Exception as e: # pylint: disable=broad-except
+
       failed = True
       embed = build_error_embed(
         title=f'{FAIL_EMOJI} error while sending message !',
@@ -82,7 +83,8 @@ class Sudo(commands.GroupCog):
           await msg.edit(content=message) # if this fails, the exception will be caught
           break
 
-    except Exception as e:
+    except Exception as e: # pylint: disable=broad-except
+
       failed = True
       embed = build_error_embed(
         title=f'{FAIL_EMOJI} error while editing message !',
@@ -120,7 +122,7 @@ class Sudo(commands.GroupCog):
     interaction: discord.Interaction,
     user: discord.Member,
     duration: app_commands.Choice[int],
-    reason: Optional[str] = None,
+    reason: str | None = None,
   ):
     embed = build_success_embed(
       title=f'{SUCCESS_EMOJI} user `{user}` has been timed out for `{duration.name}` !',)
@@ -128,7 +130,9 @@ class Sudo(commands.GroupCog):
     try:
       delta = datetime.timedelta(seconds=duration.value)
       await user.timeout(delta, reason=reason)
-    except Exception as e:
+
+    except Exception as e: # pylint: disable=broad-except
+
       failed = True
       embed = build_error_embed(
         title=f'{FAIL_EMOJI} error while timing out user `{user}` !',
@@ -137,14 +141,15 @@ class Sudo(commands.GroupCog):
     await reply_with_status_embed(interaction, embed, failed)
 
   @app_commands.command(name='untimeout', description='Untimeout a user 🔨')
-  @app_commands.describe(
-    user='User to untimeout',)
+  @app_commands.describe(user='User to untimeout',)
   async def untimeout(self, interaction: discord.Interaction, user: discord.Member):
     embed = build_success_embed(title=f'{SUCCESS_EMOJI} user `{user}` has been untimed out !',)
     failed = False
     try:
       await user.timeout(None)
-    except Exception as e:
+
+    except Exception as e: # pylint: disable=broad-except
+
       failed = True
       embed = build_error_embed(
         title=f'{FAIL_EMOJI} error while untiming out user `{user}` !',
@@ -157,12 +162,14 @@ class Sudo(commands.GroupCog):
     user='User to kick',
     reason='Reason for the kick (optional)',
   )
-  async def kick(self, interaction: discord.Interaction, user: discord.Member, reason: Optional[str] = None):
+  async def kick(self, interaction: discord.Interaction, user: discord.Member, reason: str | None = None):
     embed = build_success_embed(title=f'{SUCCESS_EMOJI} user `{user}` has been kicked !',)
     failed = False
     try:
       await user.kick(reason=reason)
-    except Exception as e:
+
+    except Exception as e: # pylint: disable=broad-except
+
       failed = True
       embed = build_error_embed(
         title=f'{FAIL_EMOJI} error while kicking user `{user}` !',
@@ -179,13 +186,15 @@ class Sudo(commands.GroupCog):
   async def ban(self,
                 interaction: discord.Interaction,
                 user: discord.Member,
-                reason: Optional[str] = None,
+                reason: str | None = None,
                 del_msgs: bool = False):
     embed = build_success_embed(title=f'{SUCCESS_EMOJI} user `{user}` has been banned !',)
     failed = False
     try:
       await user.ban(reason=reason, delete_message_days=7 if del_msgs else 0)
-    except Exception as e:
+
+    except Exception as e: # pylint: disable=broad-except
+
       failed = True
       embed = build_error_embed(
         title=f'{FAIL_EMOJI} error while banning user `{user}` !',
@@ -198,12 +207,14 @@ class Sudo(commands.GroupCog):
     user='User to unban',
     reason='Reason for the unban (optional)',
   )
-  async def unban(self, interaction: discord.Interaction, user: discord.User, reason: Optional[str] = None):
+  async def unban(self, interaction: discord.Interaction, user: discord.User, reason: str | None = None):
     embed = build_success_embed(title=f'{SUCCESS_EMOJI} user `{user}` has been unbanned !',)
     failed = False
     try:
       await interaction.guild.unban(user, reason=reason)
-    except Exception as e:
+
+    except Exception as e: # pylint: disable=broad-except
+
       failed = True
       embed = build_error_embed(
         title=f'{FAIL_EMOJI} error while unbanning user `{user}` !',
