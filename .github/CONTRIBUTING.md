@@ -1,4 +1,4 @@
-# Contributing to Useful Moderator !
+# Contributing to Resistance FR - Discord Bot !
 
 Thank you for considering a contribution to the project! Here's some information on how that can be done optimally.
 
@@ -51,45 +51,48 @@ Pull requests to fix issues or add new features are greatly appreciated, but hav
 
 ## Project structure
 
-If you're looking for something - here's a breakdown of our codebase
+If you're looking for something - here's a breakdown of some of our codebase
 
-```
-./
-├── .github
-│   ├── ISSUE_TEMPLATE/            # template for new issues (we do not allow blank issues)
-│   ├── workflows/                 # GitHub workflows (CI, code checking & build)
-│   ├── CONTRIBUTING.md            # contributing guidelines (this file)
-│   └── FUNDING.yml                # we all love money, right? 😅
+```tree
+src/                           #  Our source folder
+├── commands/                  #  Our commands folder
+│   ├── __init__.py            ## Commands init
+│   ├── bot_log.py             ## Bot log commands to parse logs inside discord
+│   ├── poll.py                ## Poll commands
+│   ├── roles.py               ## Roles commands
+│   ├── sudo.py                ## Admin commands
+│   ├── utils.py               ## Utils commands
+│   └── xp.py                  ## XP commands
 │
-├── assets/                        # generic assets
-│   └── images/                    # images and icons
-│       └── ...
+├── core/                      #  Our core folder
+│   ├── __init__.py            ## Core init
+│   └── client.py              ## Discord auto-sharded Client
 │
-├── scripts/
-│   ├── crlf-lf.bash               # dos2unix but using 8 threads 
-│   └── details.py                 # to make the <details> section because I'm lazy
+├── db/                        #  Our db folder
+│   ├── __init__.py            ## DB init
+│   ├── database.py            ## PyMongo wrapper for our database
+│   └── structs.py             ## DB structs
 │
-├── src/
-│   ├── core/                      # source directory
-│   │   ├── __init__.py
-│   │   └── client .py             # main client (inherits commands.AutoShardedBot)
-│   │   ...
+├── events/                    #  Our events folder
+│   ├── __init__.py            ## Event init
+│   └── auto_response_data.py  ## Auto response for API on message event
 │
-├── .env.example                   # example .env file
+├── helpper/                   #  Our helper folder
+│   ├── __init__.py            ## Helper init
+│   ├── auto_numbered.py       ## Auto numbered Enum class (CPP enum class like)
+│   ├── constants.py           ## Constants for our bot
+│   ├── fmt.py                 ## Formatter for loggers
+│   └── logger.py              ## Logger for our bot and discord
 │
-├── .gitignore                     # VS gitignore ⚙️
+├── messages/                  #  Our messages utility folder
+│   ├── __init__.py            ## Message init
+│   ├── embedder.py            ## Create premade embeds
+│   ├── sender.py              ## List of premade interaction responses
+│   ├── timestamp.py           ## Timestamps for Discord
+│   └── view.py                ## Very generic discord.ui.View class
 │
-├── .pylintrc                      # pylint config file
-│
-├── .style.yapf                    # yapf config file
-│
-├── changelog.md                   # the full history, or so was I told...
-│
-├── LICENSE                        # AGPL-3.0 License ⚖️
-│
-├── README.md                      # latest version of README file 👀
-│
-├── requirements.txt               # requirements for this project
-│
-└── useful-moderator.py            # main file to run the bot
+├── __init__.py                #
+└── version.py                 #  Bot versioning
+
+└── resistance.py              # Main entry point
 ```
